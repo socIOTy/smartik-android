@@ -6,6 +6,10 @@
           <option name="url" value="https://github.com/zvbox/android-geochat" />
           <option name="userName" value="" />
         </UrlAndUserName>
+        <UrlAndUserName>
+          <option name="url" value="https://github.com/socIOTy/smARTIK-android.git" />
+          <option name="userName" value="" />
+        </UrlAndUserName>
       </list>
     </option>
     <option name="cloneParentDir" value="$USER_HOME$/Documents/MAPD/MAPD121" />
