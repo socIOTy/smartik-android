@@ -1,4 +1,4 @@
-package socioty.com.smartik;
+package com.socioty.smartik;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -1,4 +1,4 @@
-package socioty.com.smartik;
+package com.socioty.smartik;
 
 import org.junit.Test;
 
