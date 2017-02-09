@@ -2,4 +2,9 @@
     <string name="app_name">smARTIK</string>
     <string name="login_message">Please login to ARTIK Cloud</string>
     <string name="login_action">login</string>
+
+    <string name="action_state">State</string>
+    <string name="action_color">Color</string>
+    <string name="action_intensity">Intensity</string>
+    <string name="button_send">Send</string>
 </resources>

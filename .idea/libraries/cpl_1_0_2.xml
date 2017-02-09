@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="cpl-1.0.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.enricocid/cpl/1.0.2/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.enricocid/cpl/1.0.2/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.enricocid/cpl/1.0.2/57af5a13d9a16879f1cd7df355c80cfdf9f8c8d3/cpl-1.0.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
