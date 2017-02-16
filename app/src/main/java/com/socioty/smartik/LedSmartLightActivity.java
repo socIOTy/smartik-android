@@ -34,8 +34,9 @@ import cloud.artik.model.MessageIDEnvelope;
 public class LedSmartLightActivity extends AppCompatActivity implements colorDialog.ColorSelectedListener {
 
     public static final String KEY_ACCESS_TOKEN = "ACCESS_TOKEN";
+    public static final String KEY_DEVICE_ID = "DEVICE_ID";
 
-    private static final String LED_SMART_LIGHT_DEVICE_ID = "61c976c37c604467a1e6d7d963723545";
+    private String deviceId;
 
     private MessagesApi messagesApi;
 
@@ -45,6 +46,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         setContentView(R.layout.led_smart_light_main);
 
         enableComponentsBasedOnState(false);
+        this.deviceId = getIntent().getStringExtra(KEY_DEVICE_ID);
         initializeMessagesApi(getIntent().getStringExtra(KEY_ACCESS_TOKEN));
 
         final Switch switchLights = (Switch) findViewById(R.id.switchLights);
@@ -157,7 +159,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
     private void commonSendAction(final ActionArray actionArray) {
         final Actions actions = new Actions(); // Actions | Actions that are passed in the body
-        actions.setDdid(LED_SMART_LIGHT_DEVICE_ID);
+        actions.setDdid(deviceId);
 
         actions.setData(actionArray);
 

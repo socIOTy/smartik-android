@@ -85,7 +85,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startMessageActivity(String accessToken) {
-        Intent msgActivityIntent = new Intent(this, LedSmartLightActivity.class);
+//        Intent msgActivityIntent = new Intent(this, LedSmartLightActivity.class);
+        Intent msgActivityIntent = new Intent(this, ListDeviceTypesActivity.class);
         msgActivityIntent.putExtra(LedSmartLightActivity.KEY_ACCESS_TOKEN, accessToken);
         startActivity(msgActivityIntent);
     }
