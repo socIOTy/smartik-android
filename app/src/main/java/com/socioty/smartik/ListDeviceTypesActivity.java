@@ -44,9 +44,8 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
 
         accessToken = getIntent().getStringExtra(KEY_ACCESS_TOKEN);
         initializeDevicesApi(accessToken);
-
         try {
-            usersApi.getUserDevicesAsync("b04db6eefcfe47c0ab2197f31a2aed0c", 0, 100, true, new ApiCallback<DevicesEnvelope>() {
+            usersApi.getUserDevicesAsync("92b683fa99164650b7907f855acc100b", 0, 100, true, new ApiCallback<DevicesEnvelope>() {
                 @Override
                 public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                     e.printStackTrace();
