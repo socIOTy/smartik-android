@@ -1,19 +1,21 @@
 package com.socioty.smartik;
 
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.NumberPicker;
-import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.enrico.colorpicker.colorDialog;
+import com.triggertrap.seekarc.SeekArc;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +30,6 @@ import cloud.artik.client.auth.OAuth;
 import cloud.artik.model.Action;
 import cloud.artik.model.ActionArray;
 import cloud.artik.model.Actions;
-import cloud.artik.model.Message;
 import cloud.artik.model.MessageIDEnvelope;
 
 public class LedSmartLightActivity extends AppCompatActivity implements colorDialog.ColorSelectedListener {
@@ -45,11 +46,49 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.led_smart_light_main);
 
+        //Set up Bottom Bar
+        final BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
+        bottomNavigationView.getMenu().getItem(0).setChecked(true);
+        bottomNavigationView.getMenu().getItem(1).setChecked(false);
+        bottomNavigationView.getMenu().getItem(2).setChecked(false);
+
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                        switch (item.getItemId()) {
+                            case R.id.action_appointments:
+
+                                break;
+                            case R.id.action_patients:
+
+                                break;
+                        }
+
+                        return false;
+                    }
+                });
+
+
+
         enableComponentsBasedOnState(false);
         this.deviceId = getIntent().getStringExtra(KEY_DEVICE_ID);
         initializeMessagesApi(getIntent().getStringExtra(KEY_ACCESS_TOKEN));
 
         final Switch switchLights = (Switch) findViewById(R.id.switchLights);
+        final Button switchLightsButton = (Button)findViewById(R.id.switchButton);
+
+        switchLightsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                
+            }
+        });
+
 
         switchLights.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -65,15 +104,15 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
     private void enableComponentsBasedOnState(final boolean state) {
         final View colorView = (View) findViewById(R.id.ledColorView);
-        final SeekBar intensitySeekBar = (SeekBar) findViewById(R.id.ledIntensitySlider);
+        final SeekArc intensitySeekArc = (SeekArc) findViewById(R.id.ledIntensitySeekArc);
 
         colorView.setEnabled(state);
-        intensitySeekBar.setEnabled(state);
+        intensitySeekArc.setEnabled(state);
     }
 
     private void configureColorButton() {
         final View colorView = (View) findViewById(R.id.ledColorView);
-        colorDialog.setPickerColor(LedSmartLightActivity.this, 1, Color.BLACK);
+        colorDialog.setPickerColor(LedSmartLightActivity.this, 1, Color.YELLOW);
 
         colorView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,24 +123,31 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
     }
 
     private void configureIntensityPicker() {
-        final SeekBar intensitySeekBar = (SeekBar) findViewById(R.id.ledIntensitySlider);
+        final SeekArc intensitySeekArc = (SeekArc) findViewById(R.id.ledIntensitySeekArc);
+        final TextView seekArcProgress = (TextView) findViewById(R.id.seekArcProgress);
 
-        intensitySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        intensitySeekArc.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
+            int latestProgress = 0;
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
+                seekArcProgress.setText(String.valueOf(progress));
+                latestProgress = progress;
 
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+            public void onStartTrackingTouch(SeekArc seekArc) {
 
             }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                sendIntensityAction(seekBar.getProgress());
+            public void onStopTrackingTouch(SeekArc seekArc) {
+                sendIntensityAction(latestProgress);
+
+
             }
         });
+
     }
 
 
@@ -114,7 +160,10 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
     }
 
     private int getSelectedIntensity() {
-        return ((SeekBar) findViewById(R.id.ledIntensitySlider)).getProgress();
+        //return ((SeekBar) findViewById(R.id.ledIntensitySlider)).getProgress();
+        return Integer.parseInt(((TextView) findViewById(R.id.seekArcProgress)).getText().toString());
+
+
     }
 
     private void initializeMessagesApi(final String accessToken) {
