@@ -2,9 +2,8 @@ package com.socioty.smartik;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
@@ -14,7 +13,7 @@ import android.widget.Button;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String ARTIK_CLOUD_AUTH_BASE_URL = "https://accounts.artik.cloud";
-    private static final String CLIENT_ID = "8eeb7a3e1bc04f15821d8e5d90e9fa8e";// AKA application id
+    private static final String CLIENT_ID = "f68c037951cd422481de491b4a1e153f";// AKA application id
     private static final String REDIRECT_URL = "http://localhost:8080";
 
     private View mLoginView;

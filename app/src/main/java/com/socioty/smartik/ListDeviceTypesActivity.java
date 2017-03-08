@@ -1,9 +1,8 @@
 package com.socioty.smartik;
 
-import android.os.Handler;
-import android.support.annotation.MainThread;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -11,9 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import cloud.artik.api.DevicesApi;
-import cloud.artik.api.DevicesManagementApi;
-import cloud.artik.api.MessagesApi;
 import cloud.artik.api.UsersApi;
 import cloud.artik.client.ApiCallback;
 import cloud.artik.client.ApiClient;
@@ -21,10 +17,7 @@ import cloud.artik.client.ApiException;
 import cloud.artik.client.Configuration;
 import cloud.artik.client.auth.OAuth;
 import cloud.artik.model.Device;
-import cloud.artik.model.DeviceArray;
-import cloud.artik.model.DeviceEnvelope;
 import cloud.artik.model.DevicesEnvelope;
-import cloud.artik.model.MetadataQueryEnvelope;
 
 
 public class ListDeviceTypesActivity extends AppCompatActivity {
@@ -46,7 +39,8 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
         initializeDevicesApi(accessToken);
 
         try {
-            usersApi.getUserDevicesAsync("b04db6eefcfe47c0ab2197f31a2aed0c", 0, 100, true, new ApiCallback<DevicesEnvelope>() {
+            usersApi.getUserDevicesAsync("92b683fa99164650b7907f855acc100b", 0, 100, true, new ApiCallback<DevicesEnvelope>() {
+
                 @Override
                 public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                     e.printStackTrace();
