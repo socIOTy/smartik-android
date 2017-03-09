@@ -9,4 +9,5 @@
     <string name="button_send">Send</string>
     <string name="initialValue">0</string>
     <string name="light_off">Light Off</string>
+    <string name="light_on">Light On</string>
 </resources>

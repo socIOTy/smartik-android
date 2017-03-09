@@ -42,6 +42,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
     private MessagesApi messagesApi;
 
     private ImageButton imageButton;
+    private TextView state;
     private boolean isOn = false;
 
     @Override
@@ -91,6 +92,8 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         enableComponentsBasedOnState(false);
         this.deviceId = getIntent().getStringExtra(KEY_DEVICE_ID);
         initializeMessagesApi(getIntent().getStringExtra(KEY_ACCESS_TOKEN));
+
+        state = (TextView) findViewById(R.id.lightIndicatorText);
 
 
         configureColorButton();
@@ -239,8 +242,11 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
     private void changeImage(ImageButton imageButton, boolean isOn) {
         if (isOn) {
             imageButton.setImageResource(R.mipmap.on_button);
+            state.setText(getString(R.string.light_on));
+
         } else {
             imageButton.setImageResource(R.mipmap.off_button);
+            state.setText(getString(R.string.light_off));
         }
     }
 }
