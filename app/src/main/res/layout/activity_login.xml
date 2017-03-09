@@ -6,7 +6,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.socioty.smartik.LoginActivity" >
+    tools:context="com.socioty.smartik.LoginActivity"
+    android:background="@drawable/login_screen_bg">
 
     <RelativeLayout
         android:id="@+id/ask_for_login"
@@ -14,18 +15,24 @@
         android:layout_height="match_parent"
         >
 
-        <TextView
-            android:id="@+id/hello_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/login_message" />
+        <ImageView
+            android:id="@+id/image_logo"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/logo"
+            android:layout_margin="20dp"
+            android:layout_centerHorizontal="true"/>
 
         <Button
             android:id="@+id/btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/hello_text"
-            android:text="@string/login_action" />
+            android:layout_width="300dp"
+            android:layout_height="70dp"
+            android:text="@string/login_action"
+            android:layout_marginTop="20dp"
+            android:textSize="20dp"
+            android:layout_below="@id/image_logo"
+            android:background="@android:color/white"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 
     <WebView

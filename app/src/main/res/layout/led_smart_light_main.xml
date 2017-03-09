@@ -23,27 +23,24 @@
         <RelativeLayout android:layout_width="match_parent"
                         android:layout_height="180dp"
                         android:background="@mipmap/background">
-            <Switch
-                android:id="@+id/switchLights"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
-            <Button
-                android:layout_height="111dp"
-                android:layout_width="70dp"
-                android:id="@+id/switchButton"
-                android:background="@mipmap/off_button"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_below="@+id/switchLights"
-                android:layout_centerHorizontal="true"/>
+            <ImageButton
+                android:id="@+id/switcher"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:src="@mipmap/off_button"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp" />
             <TextView
                 android:id="@+id/lightIndicatorText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/light_off"
                 android:textColor="@android:color/background_light"
-                android:layout_below="@+id/switchButton"
+                android:layout_below="@id/switcher"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="12dp"/>
 

@@ -1,6 +1,7 @@
 package com.socioty.smartik;
 
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -9,9 +10,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.Switch;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.enrico.colorpicker.colorDialog;
@@ -41,6 +41,9 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
     private MessagesApi messagesApi;
 
+    private ImageButton imageButton;
+    private boolean isOn = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +56,16 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         bottomNavigationView.getMenu().getItem(1).setChecked(false);
         bottomNavigationView.getMenu().getItem(2).setChecked(false);
 
+        imageButton = (ImageButton) findViewById(R.id.switcher);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isOn = !isOn;
+                changeImage(imageButton, isOn);
+                sendStateAction(isOn);
+                enableComponentsBasedOnState(isOn);
+            }
+        });
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
 
@@ -79,24 +92,6 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         this.deviceId = getIntent().getStringExtra(KEY_DEVICE_ID);
         initializeMessagesApi(getIntent().getStringExtra(KEY_ACCESS_TOKEN));
 
-        final Switch switchLights = (Switch) findViewById(R.id.switchLights);
-        final Button switchLightsButton = (Button)findViewById(R.id.switchButton);
-
-        switchLightsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                
-            }
-        });
-
-
-        switchLights.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean active) {
-                sendStateAction(active);
-                enableComponentsBasedOnState(active);
-            }
-        });
 
         configureColorButton();
         configureIntensityPicker();
@@ -239,6 +234,13 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         } catch (ApiException e) {
             System.err.println("Exception when calling MessagesApi#sendActions");
             e.printStackTrace();
+        }
+    }
+    private void changeImage(ImageButton imageButton, boolean isOn) {
+        if (isOn) {
+            imageButton.setImageResource(R.mipmap.on_button);
+        } else {
+            imageButton.setImageResource(R.mipmap.off_button);
         }
     }
 }
