@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:seekarc="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.socioty.smartik.LedSmartLightActivity">
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+        <RelativeLayout android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:background="@mipmap/background">
+
+            <ImageButton
+                android:id="@+id/switcher"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:src="@mipmap/off_button"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp" />
+            <TextView
+                android:id="@+id/lightIndicatorText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/light_off"
+                android:textColor="@android:color/background_light"
+                android:layout_below="@id/switcher"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"/>
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent"
+            android:layout_marginTop="15dp" android:layout_marginLeft="20dp"
+            android:layout_marginBottom="5dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Setting:" android:textSize="16sp"
+            android:textColor="?attr/textColorAlertDialogListItem"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Custom" android:fontFamily="sans-serif"
+                android:textStyle="normal|italic" android:textSize="16sp"
+                android:textAlignment="textStart" android:layout_marginLeft="10dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp" android:layout_marginLeft="20dp"
+            android:layout_marginBottom="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Current Color:" android:textSize="16sp"
+                android:textColor="@color/progress_gray_dark"/>
+            <View
+                android:id="@+id/ledColorView"
+                android:layout_width="30dp"
+                android:background="@android:color/holo_orange_light"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                />
+        </LinearLayout>
+
+
+        <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="192dp">
+
+        <com.triggertrap.seekarc.SeekArc
+            android:id="@+id/ledIntensitySeekArc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            seekarc:rotation="0"
+            seekarc:startAngle="0"
+            seekarc:sweepAngle="360"
+            seekarc:arcColor="@color/progress_gray"
+            seekarc:arcWidth="3dp"
+            android:padding="40dp" android:fadingEdge="none"
+            android:fadingEdgeLength="5dp" seekarc:touchInside="true"
+            android:scrollbarThumbHorizontal="@android:drawable/btn_radio"
+            android:layout_alignParentBottom="true"/>
+
+
+            <TextView
+                android:id="@+id/seekArcProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/initialValue"
+                android:typeface="monospace"
+                android:textSize="40sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/seekArcProgress"
+                android:text="@string/action_intensity" />
+            </RelativeLayout>
+    </LinearLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:itemBackground="@color/colorPrimary"
+        app:itemIconTint="@color/darkGrey"
+        app:itemTextColor="@color/darkGrey"
+        app:menu="@menu/buttom_navigation" />
+
+
+</RelativeLayout>

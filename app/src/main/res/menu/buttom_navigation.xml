@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_logout"
+        android:enabled="true"
+        android:icon="@mipmap/light"
+        android:title="Light"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_appointments"
+        android:enabled="true"
+        android:icon="@mipmap/climate"
+        android:title="Climate"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_patients"
+        android:enabled="true"
+        android:title=""
+        app:showAsAction="ifRoom" />
+
+
+</menu>
