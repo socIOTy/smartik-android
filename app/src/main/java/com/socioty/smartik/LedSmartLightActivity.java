@@ -91,7 +91,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
         enableComponentsBasedOnState(false);
         this.deviceId = getIntent().getStringExtra(KEY_DEVICE_ID);
-        initializeMessagesApi(getIntent().getStringExtra(KEY_ACCESS_TOKEN));
+        initializeMessagesApi(Token.sToken.getToken());
 
         state = (TextView) findViewById(R.id.lightIndicatorText);
 
