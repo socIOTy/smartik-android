@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.socioty.smartik.NestThermostatActivity">
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:id="@+id/linearLayout">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+        <RelativeLayout android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:background="@drawable/temp_background">
+            <Button
+                android:id="@+id/button"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:background="#00000000"
+                android:fontFamily="sans-serif-thin"
+                android:text="°F"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp"/>
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:background="#00000000"
+                android:fontFamily="sans-serif-black"
+                android:text="°C"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp"/>
+            <TextView
+                android:id="@+id/tempView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="20 °C"
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light"
+                android:textSize="90sp"/>
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp" android:layout_marginRight="20dp"
+            android:layout_marginTop="40dp" android:gravity="center_horizontal"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp" android:text="Current Color:"
+                android:textColor="@color/progress_gray_dark" android:textSize="16sp"/>
+            <ExpandableListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:entries="@android:string/yes"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp" android:layout_marginRight="20dp"
+            android:layout_marginTop="30dp" android:gravity="center_horizontal"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Temperature:" android:textColor="@color/progress_gray_dark"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp" android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp" android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <SeekBar
+                android:id="@+id/seekBar2"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_weight="1" android:elevation="17dp"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>
