@@ -27,7 +27,8 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
 
     public static final String KEY_ACCESS_TOKEN = "ACCESS_TOKEN";
 
-    private static final String LED_SMART_LIGHT_DEVICE_TYPE_ID = "dt71c282d4fad94a69b22fa6d1e449fbbb";
+    public static final String LED_SMART_LIGHT_DEVICE_TYPE_ID = "dt71c282d4fad94a69b22fa6d1e449fbbb";
+    public static final String NEST_THERMOSTAT_DEVICE_TYPE_ID = "dt5247379d38fa4ac78e4723f8e92de681";
 
     private String accessToken;
 
@@ -59,9 +60,7 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
                     final List<Device> devices = new ArrayList<>();
 
                     for (final Device device : result.getData().getDevices()) {
-                        if (device.getDtid().equals(LED_SMART_LIGHT_DEVICE_TYPE_ID)) {
-                            devices.add(device);
-                        }
+                        devices.add(device);
                     }
 
                     // Get a handler that can be used to post to the main thread

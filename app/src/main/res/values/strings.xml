@@ -12,4 +12,18 @@
     <string name="light_on">Light On</string>
 
     <string name="log_out">LogOut</string>
+
+    <string name="celsius_label">°C"</string>
+    <string name="fahrenheit_label">°F"</string>
+
+    <string name="system_state_label">System</string>
+    <string name="temperature_label">Temperature</string>
+
+    <string-array name="state_array">
+        <item>Off</item>
+        <item>Auto</item>
+        <item>Heat</item>
+        <item>Cool</item>
+    </string-array>
+
 </resources>
