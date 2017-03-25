@@ -26,4 +26,9 @@
         <item>Cool</item>
     </string-array>
 
+    <string name="status_label">Status</string>
+    <string name="rooms_label">Rooms</string>
+    <string name="scenarios_label">Scenarios</string>
+    <string name="devices_label">Devices</string>
+
 </resources>

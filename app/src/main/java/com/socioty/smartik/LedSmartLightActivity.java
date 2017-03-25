@@ -50,12 +50,6 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.led_smart_light_main);
 
-        //Set up Bottom Bar
-        final BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_navigation);
-        bottomNavigationView.getMenu().getItem(0).setChecked(true);
-        bottomNavigationView.getMenu().getItem(1).setChecked(false);
-        bottomNavigationView.getMenu().getItem(2).setChecked(false);
 
         imageButton = (ImageButton) findViewById(R.id.switcher);
         imageButton.setOnClickListener(new View.OnClickListener() {
@@ -67,26 +61,6 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
                 enableComponentsBasedOnState(isOn);
             }
         });
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                        switch (item.getItemId()) {
-                            case R.id.action_appointments:
-
-                                break;
-                            case R.id.action_patients:
-
-                                break;
-                        }
-
-                        return false;
-                    }
-                });
-
 
 
         enableComponentsBasedOnState(false);

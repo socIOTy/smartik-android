@@ -100,7 +100,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startMessageActivity() {
 //        Intent msgActivityIntent = new Intent(this, LedSmartLightActivity.class);
-        Intent msgActivityIntent = new Intent(this, ListDeviceTypesActivity.class);
+        //Intent msgActivityIntent = new Intent(this, ListDeviceTypesActivity.class);
+        Intent msgActivityIntent = new Intent(this, ControlPanelActivity.class);
         startActivity(msgActivityIntent);
     }
 

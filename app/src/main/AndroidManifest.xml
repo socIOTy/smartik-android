@@ -29,6 +29,7 @@
             </intent-filter>
             -->
         </activity>
+        <activity android:name=".ControlPanelActivity"/>
         <activity android:name=".ListDeviceTypesActivity"/>
         <activity android:name=".NestThermostatActivity">
         </activity>

@@ -49,7 +49,7 @@ public class Token {
     }
 
     public static void setToken(String mToken, long exp, Context context) {
-        sToken.mKey = mToken;
+        sToken = new Token(mToken);
         if (mToken!=null) {
             sToken.saveToken(mToken, exp, context);
         }
