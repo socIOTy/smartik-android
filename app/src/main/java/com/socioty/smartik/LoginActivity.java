@@ -19,6 +19,8 @@ public class LoginActivity extends AppCompatActivity {
     private View mLoginView;
     private WebView mWebView;
 
+    private Token token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +31,11 @@ public class LoginActivity extends AppCompatActivity {
         mLoginView = findViewById(R.id.ask_for_login);
         mLoginView.setVisibility(View.VISIBLE);
         Button button = (Button)findViewById(R.id.btn);
+
+        token = Token.get(getApplicationContext());
+        if (Token.sToken.getToken() != null) {
+            startMessageActivity();
+        }
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -59,8 +66,16 @@ public class LoginActivity extends AppCompatActivity {
                         String[] sArray = uri.split("access_token=");
                         String strHavingAccessToken = sArray[1];
                         String accessToken = strHavingAccessToken.split("&")[0];
+                        String[] sExpArray = uri.split("expires_in=");
+                        String strExp = sExpArray[1];
+                        long expIn = Long.parseLong(strExp);
+                        long exp = System.currentTimeMillis()/1000 + expIn;
                         System.out.println("token: " + accessToken);
-                        startMessageActivity(accessToken);
+                        token.setToken(accessToken, exp, getApplicationContext());
+                        //token.get(getApplicationContext());
+                        mLoginView.setVisibility(View.VISIBLE);
+                        mWebView.setVisibility(View.GONE);
+                        startMessageActivity();
                     } else { // No access token available. Signup finishes and user clicks "Back to login"
                         // Example of uri: http://localhost:8000/acdemo/index.php?origin=signup&status=login_request
                         //
@@ -83,10 +98,10 @@ public class LoginActivity extends AppCompatActivity {
                 "client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URL;
     }
 
-    private void startMessageActivity(String accessToken) {
+    private void startMessageActivity() {
 //        Intent msgActivityIntent = new Intent(this, LedSmartLightActivity.class);
-        Intent msgActivityIntent = new Intent(this, ListDeviceTypesActivity.class);
-        msgActivityIntent.putExtra(LedSmartLightActivity.KEY_ACCESS_TOKEN, accessToken);
+        //Intent msgActivityIntent = new Intent(this, ListDeviceTypesActivity.class);
+        Intent msgActivityIntent = new Intent(this, ControlPanelActivity.class);
         startActivity(msgActivityIntent);
     }
 

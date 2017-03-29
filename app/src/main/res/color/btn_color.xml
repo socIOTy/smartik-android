@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <!-- Any Enabled button, gets White Text -->
+    <item
+        android:color="@color/colorAccent"
+        android:state_selected="true" />
+
+    <!-- Buttons with any other state, get DarkGray Text -->
+    <item
+        android:color="@android:color/background_light"/>
+</selector>
