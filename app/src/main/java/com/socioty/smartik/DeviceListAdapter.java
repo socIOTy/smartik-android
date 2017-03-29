@@ -60,11 +60,11 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
             public void onClick(View v) {
                 Intent intent;
                 switch (devices.get(position).getDtid()) {
-                    case ListDeviceTypesActivity.LED_SMART_LIGHT_DEVICE_TYPE_ID: {
+                    case DeviceListFragment.LED_SMART_LIGHT_DEVICE_TYPE_ID: {
                         intent = new Intent(v.getContext(), LedSmartLightActivity.class);
                         break;
                     }
-                    case ListDeviceTypesActivity.NEST_THERMOSTAT_DEVICE_TYPE_ID: {
+                    case DeviceListFragment.NEST_THERMOSTAT_DEVICE_TYPE_ID: {
                         intent = new Intent(v.getContext(), NestThermostatActivity.class);
                         break;
                     }
