@@ -1,10 +1,14 @@
 package com.socioty.smartik;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,24 +24,40 @@ import cloud.artik.model.Device;
 import cloud.artik.model.DevicesEnvelope;
 import cloud.artik.model.UserEnvelope;
 
+/**
+ * Created by serhiipianykh on 2017-03-23.
+ */
 
-public class ListDeviceTypesActivity extends AppCompatActivity {
+public class DeviceListFragment extends Fragment {
 
     public static final String KEY_ACCESS_TOKEN = "ACCESS_TOKEN";
 
-    private static final String LED_SMART_LIGHT_DEVICE_TYPE_ID = "dt71c282d4fad94a69b22fa6d1e449fbbb";
+    public static final String LED_SMART_LIGHT_DEVICE_TYPE_ID = "dt71c282d4fad94a69b22fa6d1e449fbbb";
+    public static final String NEST_THERMOSTAT_DEVICE_TYPE_ID = "dt5247379d38fa4ac78e4723f8e92de681";
 
     private String accessToken;
 
     private UsersApi usersApi;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_device_types);
+    public static DeviceListFragment newInstance() {
 
-        accessToken = getIntent().getStringExtra(KEY_ACCESS_TOKEN);
+        Bundle args = new Bundle();
+
+        DeviceListFragment fragment = new DeviceListFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        accessToken = Token.sToken.getToken();
         initializeDevicesApi(accessToken);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View v = inflater.inflate(R.layout.activity_list_device_types, container, false);
 
         try {
             usersApi.getSelfAsync(new ApiCallback<UserEnvelope>() {
@@ -69,6 +89,7 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
             System.out.println(e.getCause());
         }
 
+        return v;
     }
 
     private void invokeListDevices(final UserEnvelope userEnvelope) {
@@ -88,25 +109,23 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
                     final List<Device> devices = new ArrayList<>();
 
                     for (final Device device : result.getData().getDevices()) {
-                        if (device.getDtid().equals(LED_SMART_LIGHT_DEVICE_TYPE_ID)) {
-                            devices.add(device);
-                        }
+                        devices.add(device);
                     }
 
                     // Get a handler that can be used to post to the main thread
-                    Handler mainHandler = new Handler(ListDeviceTypesActivity.this.getMainLooper());
+                    Handler mainHandler = new Handler(getActivity().getMainLooper());
 
                     Runnable myRunnable = new Runnable() {
                         @Override
                         public void run() {
-                            final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.device_list);
+                            final RecyclerView mRecyclerView = (RecyclerView) getView().findViewById(R.id.device_list);
 
                             // use this setting to improve performance if you know that changes
                             // in content do not change the layout size of the RecyclerView
                             mRecyclerView.setHasFixedSize(true);
 
                             // use a linear layout manager
-                            final LinearLayoutManager mLayoutManager = new LinearLayoutManager(ListDeviceTypesActivity.this);
+                            final LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
                             mRecyclerView.setLayoutManager(mLayoutManager);
 
 
@@ -116,6 +135,7 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
                         }
                     };
                     mainHandler.post(myRunnable);
+                    startSockectListenerService(userEnvelope.getData().getId(), devices);
                 }
 
                 @Override
@@ -144,4 +164,25 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
 
         usersApi = new UsersApi(mApiClient);
     }
+
+    private void startSockectListenerService(final String userId, final Iterable<Device> devices) {
+        if (devices.iterator().hasNext()) {
+            final StringBuilder deviceIds = new StringBuilder();
+            for (final Device device : devices) {
+                deviceIds.append(device.getId()).append(",");
+            }
+            deviceIds.delete(deviceIds.length() - 1, deviceIds.length());
+
+            final Intent intent = new Intent(getContext(), FirehoseWebSocketListenerService.class);
+            final Bundle bundle = new Bundle();
+            bundle.putString(FirehoseWebSocketListenerService.ACCESS_TOKEN_KEY, accessToken);
+            bundle.putString(FirehoseWebSocketListenerService.USER_ID_KEY, userId);
+            bundle.putString(FirehoseWebSocketListenerService.DEVICE_IDS_KEY, deviceIds.toString());
+            intent.putExtras(bundle);
+            getActivity().startService(intent) ;
+        }
+
+    }
+
+
 }

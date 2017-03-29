@@ -58,10 +58,27 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent msgActivityIntent = new Intent(v.getContext(), LedSmartLightActivity.class);
-                msgActivityIntent.putExtra(LedSmartLightActivity.KEY_ACCESS_TOKEN, accessToken);
-                msgActivityIntent.putExtra(LedSmartLightActivity.KEY_DEVICE_ID, devices.get(position).getId());
-                v.getContext().startActivity(msgActivityIntent);
+                Intent intent;
+                switch (devices.get(position).getDtid()) {
+                    case DeviceListFragment.LED_SMART_LIGHT_DEVICE_TYPE_ID: {
+                        intent = new Intent(v.getContext(), LedSmartLightActivity.class);
+                        break;
+                    }
+                    case DeviceListFragment.NEST_THERMOSTAT_DEVICE_TYPE_ID: {
+                        intent = new Intent(v.getContext(), NestThermostatActivity.class);
+                        break;
+                    }
+                    default: {
+                        intent = null;
+                        break;
+                    }
+                }
+                if (intent != null) {
+                    intent.putExtra(LedSmartLightActivity.KEY_ACCESS_TOKEN, accessToken);
+                    intent.putExtra(LedSmartLightActivity.KEY_DEVICE_ID, devices.get(position).getId());
+                    v.getContext().startActivity(intent);
+                }
+
             }
         });
 

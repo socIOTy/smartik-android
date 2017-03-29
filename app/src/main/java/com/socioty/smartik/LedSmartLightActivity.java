@@ -1,21 +1,25 @@
 package com.socioty.smartik;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.enrico.colorpicker.colorDialog;
 import com.triggertrap.seekarc.SeekArc;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,11 +35,14 @@ import cloud.artik.model.Action;
 import cloud.artik.model.ActionArray;
 import cloud.artik.model.Actions;
 import cloud.artik.model.MessageIDEnvelope;
+import cloud.artik.model.NormalizedMessagesEnvelope;
 
-public class LedSmartLightActivity extends AppCompatActivity implements colorDialog.ColorSelectedListener {
+public class LedSmartLightActivity extends AppCompatActivity implements colorDialog.ColorSelectedListener, DeviceMessageBroadcastReceiver.Delegate {
 
     public static final String KEY_ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String KEY_DEVICE_ID = "DEVICE_ID";
+
+    private final DeviceMessageBroadcastReceiver broadcastReceiver = new DeviceMessageBroadcastReceiver(this);
 
     private String deviceId;
 
@@ -43,20 +50,20 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
     private ImageButton imageButton;
     private TextView state;
+
     private boolean isOn = false;
+    private int intensity = 0;
+    private int rColor = 0;
+    private int gColor = 0;
+    private int bColor = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.led_smart_light_main);
 
-        //Set up Bottom Bar
-        final BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_navigation);
-        bottomNavigationView.getMenu().getItem(0).setChecked(true);
-        bottomNavigationView.getMenu().getItem(1).setChecked(false);
-        bottomNavigationView.getMenu().getItem(2).setChecked(false);
-
+        initializeMessagesApi(Token.sToken.getToken());
+        this.deviceId = getIntent().getStringExtra(KEY_DEVICE_ID);
         imageButton = (ImageButton) findViewById(R.id.switcher);
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,50 +75,36 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(
 
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                        switch (item.getItemId()) {
-                            case R.id.action_appointments:
-
-                                break;
-                            case R.id.action_patients:
-
-                                break;
-                        }
-
-                        return false;
-                    }
-                });
-
-
-
-        enableComponentsBasedOnState(false);
-        this.deviceId = getIntent().getStringExtra(KEY_DEVICE_ID);
-        initializeMessagesApi(getIntent().getStringExtra(KEY_ACCESS_TOKEN));
+        getLatestMsg();
 
         state = (TextView) findViewById(R.id.lightIndicatorText);
 
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(String.format(FirehoseWebSocketListenerService.DEVICE_MESSAGE_BROADCAST_ACTION_PATTERN, deviceId));
+        registerReceiver(broadcastReceiver, intentFilter);
+    }
 
-        configureColorButton();
-        configureIntensityPicker();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 
     private void enableComponentsBasedOnState(final boolean state) {
         final View colorView = (View) findViewById(R.id.ledColorView);
         final SeekArc intensitySeekArc = (SeekArc) findViewById(R.id.ledIntensitySeekArc);
-
         colorView.setEnabled(state);
+        changeImage(imageButton, isOn);
         intensitySeekArc.setEnabled(state);
     }
 
     private void configureColorButton() {
         final View colorView = (View) findViewById(R.id.ledColorView);
-        colorDialog.setPickerColor(LedSmartLightActivity.this, 1, Color.YELLOW);
-
+        int rgb = rColor;
+        rgb = (rgb << 8) + gColor;
+        rgb = (rgb << 8) + bColor;
+        colorDialog.setPickerColor(LedSmartLightActivity.this, 1, rgb);
         colorView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -123,7 +116,8 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
     private void configureIntensityPicker() {
         final SeekArc intensitySeekArc = (SeekArc) findViewById(R.id.ledIntensitySeekArc);
         final TextView seekArcProgress = (TextView) findViewById(R.id.seekArcProgress);
-
+        intensitySeekArc.setProgress(intensity);
+        seekArcProgress.setText(String.valueOf(intensity));
         intensitySeekArc.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
             int latestProgress = 0;
             @Override
@@ -221,6 +215,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
                 @Override
                 public void onSuccess(MessageIDEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    broadcastReceiver.ignoreNext();
                     System.out.println(result);
                 }
 
@@ -248,5 +243,93 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
             imageButton.setImageResource(R.mipmap.off_button);
             state.setText(getString(R.string.light_off));
         }
+    }
+
+    private void getLatestMsg() {
+        final String tag = "Bulb getLastNormalizedMessagesAsync";
+        try {
+            int messageCount = 1;
+            messagesApi.getLastNormalizedMessagesAsync(messageCount, deviceId, null,
+                    new ApiCallback<NormalizedMessagesEnvelope>() {
+                        @Override
+                        public void onFailure(ApiException exc, int i, Map<String, List<String>> stringListMap) {
+                            processFailure(tag, exc);
+                        }
+
+                        @Override
+                        public void onSuccess(NormalizedMessagesEnvelope result, int i, Map<String, List<String>> stringListMap) {
+                            Log.v(tag, " onSuccess latestMessage = " + result.getData().toString());
+                            String mid = "";
+                            String data = "";
+                            if (!result.getData().isEmpty()) {
+                                mid = result.getData().get(0).getMid();
+                                data = result.getData().get(0).getData().toString();
+                            }
+                            updateState(data);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    initUI();
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void onUploadProgress(long bytes, long contentLen, boolean done) {
+                        }
+
+                        @Override
+                        public void onDownloadProgress(long bytes, long contentLen, boolean done) {
+                        }
+                    });
+        } catch (ApiException exc) {
+            processFailure(tag, exc);
+        }
+    }
+
+    private void processFailure(final String context, ApiException exc) {
+        String errorDetail = " onFailure with exception" + exc;
+        Log.w(context, errorDetail);
+        exc.printStackTrace();
+    }
+
+    private void updateState(final String jsonString) {
+        try {
+            updateState(new JSONObject(jsonString));
+        } catch (final JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void updateState(final JSONObject json) {
+        try {
+            isOn = json.getBoolean("state");
+            intensity = json.getInt("intensity");
+            JSONObject colors = json.getJSONObject("colorRGB");
+            rColor = colors.getInt("r");
+            gColor = colors.getInt("g");
+            bColor = colors.getInt("b");
+        } catch (final JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void initUI() {
+        configureColorButton();
+        configureIntensityPicker();
+        enableComponentsBasedOnState(isOn);
+    }
+
+    @Override
+    public View getSnackbarView() {
+        return findViewById(R.id.switcher);
+    }
+
+    @Override
+    public void delegate(final JSONObject json) {
+        updateState(json);
+        initUI();
     }
 }
