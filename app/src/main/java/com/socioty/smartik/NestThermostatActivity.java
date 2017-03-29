@@ -256,17 +256,8 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
                                 mid = result.getData().get(0).getMid();
                                 data = result.getData().get(0).getData().toString();
                             }
-                            try {
-                                JSONObject json = new JSONObject(data);
-                                final int temperatureValue = (int)Math.round(json.getDouble("target_temperature_c"));
-                                currentTemp = temperatureValue;
 
-                                final boolean canHeat = json.getBoolean("can_heat");
-                                final boolean canCool = json.getBoolean("can_cool");
-                                state = Mode.parseMode(canHeat, canCool).ordinal();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            updateState(data);
 
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -294,6 +285,27 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
         String errorDetail = " onFailure with exception" + exc;
         Log.w(context, errorDetail);
         exc.printStackTrace();
+    }
+
+    private void updateState(final String jsonString) {
+        try {
+            updateState(new JSONObject(jsonString));
+        } catch (final JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void updateState(final JSONObject json) {
+        try {
+            final int temperatureValue = (int)Math.round(json.getDouble("target_temperature_c"));
+            currentTemp = temperatureValue;
+
+            final boolean canHeat = json.getBoolean("can_heat");
+            final boolean canCool = json.getBoolean("can_cool");
+            state = Mode.parseMode(canHeat, canCool).ordinal();
+        } catch (final JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void initUI() {
@@ -368,17 +380,7 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
 
     @Override
     public void delegate(final JSONObject json) {
-        try {
-            final int temperatureValue = (int)Math.round(json.getDouble("target_temperature_c"));
-            currentTemp = temperatureValue;
-
-            final boolean canHeat = json.getBoolean("can_heat");
-            final boolean canCool = json.getBoolean("can_cool");
-            state = Mode.parseMode(canHeat, canCool).ordinal();
-
-            initUI();
-        } catch (final JSONException e) {
-            throw new RuntimeException(e);
-        }
+        updateState(json);
+        initUI();
     }
 }

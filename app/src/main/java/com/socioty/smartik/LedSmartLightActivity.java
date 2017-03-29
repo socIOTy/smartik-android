@@ -265,17 +265,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
                                 mid = result.getData().get(0).getMid();
                                 data = result.getData().get(0).getData().toString();
                             }
-                            try {
-                                JSONObject json = new JSONObject(data);
-                                isOn = json.getBoolean("state");
-                                intensity = json.getInt("intensity");
-                                JSONObject colors = json.getJSONObject("colorRGB");
-                                rColor = colors.getInt("r");
-                                gColor = colors.getInt("g");
-                                bColor = colors.getInt("b");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            updateState(data);
 
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -305,6 +295,27 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         exc.printStackTrace();
     }
 
+    private void updateState(final String jsonString) {
+        try {
+            updateState(new JSONObject(jsonString));
+        } catch (final JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void updateState(final JSONObject json) {
+        try {
+            isOn = json.getBoolean("state");
+            intensity = json.getInt("intensity");
+            JSONObject colors = json.getJSONObject("colorRGB");
+            rColor = colors.getInt("r");
+            gColor = colors.getInt("g");
+            bColor = colors.getInt("b");
+        } catch (final JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void initUI() {
         configureColorButton();
         configureIntensityPicker();
@@ -318,16 +329,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
     @Override
     public void delegate(final JSONObject json) {
-        try {
-            isOn = json.getBoolean("state");
-            intensity = json.getInt("intensity");
-            JSONObject colors = json.getJSONObject("colorRGB");
-            rColor = colors.getInt("r");
-            gColor = colors.getInt("g");
-            bColor = colors.getInt("b");
-            initUI();
-        } catch (final JSONException e) {
-            throw new RuntimeException(e);
-        }
+        updateState(json);
+        initUI();
     }
 }
