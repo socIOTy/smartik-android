@@ -37,22 +37,12 @@ import cloud.artik.model.Actions;
 import cloud.artik.model.MessageIDEnvelope;
 import cloud.artik.model.NormalizedMessagesEnvelope;
 
-public class LedSmartLightActivity extends AppCompatActivity implements colorDialog.ColorSelectedListener {
+public class LedSmartLightActivity extends AppCompatActivity implements colorDialog.ColorSelectedListener, DeviceMessageBroadcastReceiver.Delegate {
 
     public static final String KEY_ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String KEY_DEVICE_ID = "DEVICE_ID";
 
-    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-
-        public static final String TAG = "BroadcastReceiver";
-
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            String action = intent.getAction();
-            Log.v(TAG,"received action:" + action);
-            Snackbar.make(findViewById(R.id.switcher), "Device status was updated!", Snackbar.LENGTH_LONG).show();
-        }
-    };
+    private final DeviceMessageBroadcastReceiver broadcastReceiver = new DeviceMessageBroadcastReceiver(this);
 
     private String deviceId;
 
@@ -225,6 +215,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
                 @Override
                 public void onSuccess(MessageIDEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    broadcastReceiver.ignoreNext();
                     System.out.println(result);
                 }
 
@@ -318,5 +309,25 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         configureColorButton();
         configureIntensityPicker();
         enableComponentsBasedOnState(isOn);
+    }
+
+    @Override
+    public View getSnackbarView() {
+        return findViewById(R.id.switcher);
+    }
+
+    @Override
+    public void delegate(final JSONObject json) {
+        try {
+            isOn = json.getBoolean("state");
+            intensity = json.getInt("intensity");
+            JSONObject colors = json.getJSONObject("colorRGB");
+            rColor = colors.getInt("r");
+            gColor = colors.getInt("g");
+            bColor = colors.getInt("b");
+            initUI();
+        } catch (final JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

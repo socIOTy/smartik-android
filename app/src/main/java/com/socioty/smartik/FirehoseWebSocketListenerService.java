@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -22,6 +24,8 @@ public class FirehoseWebSocketListenerService extends Service {
     public static final String ACCESS_TOKEN_KEY = "ACCESS_TOKEN";
     public static final String USER_ID_KEY = "USER_ID";
     public static final String DEVICE_IDS_KEY = "DEVICE_IDS";
+
+    public static final String BROADCAST_MESSAGE_KEY = "MESSAGE";
 
     private FirehoseWebSocket socket;
 
@@ -95,7 +99,7 @@ public class FirehoseWebSocketListenerService extends Service {
 
                         @Override
                         public void onPing(long timestamp) {
-                            //Nothing to do
+                            System.out.printf("ping: %d\n", timestamp);
                         }
 
                     });
@@ -115,9 +119,14 @@ public class FirehoseWebSocketListenerService extends Service {
         }
     }
 
-    private void sendBroadcastMessage(MessageOut message) {
-        Intent intent = new Intent();
+    private void sendBroadcastMessage(final MessageOut message) {
+        final Intent intent = new Intent();
         intent.setAction(String.format(DEVICE_MESSAGE_BROADCAST_ACTION_PATTERN, message.getSdid()));
+
+        final Bundle bundle = new Bundle();
+        bundle.putString(BROADCAST_MESSAGE_KEY, new JSONObject(message.getData()).toString());
+        intent.putExtras(bundle);
+        System.out.printf("Broadcasting: %s\n", intent.getAction());
 
         sendBroadcast(intent);
     }
