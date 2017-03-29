@@ -109,4 +109,5 @@ public class LoginActivity extends AppCompatActivity {
         CookieManager.getInstance().removeAllCookie();
         mWebView.loadUrl(getAuthorizationRequestUri());
     }
+
 }

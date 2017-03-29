@@ -1,5 +1,6 @@
 package com.socioty.smartik;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import cloud.artik.client.Configuration;
 import cloud.artik.client.auth.OAuth;
 import cloud.artik.model.Device;
 import cloud.artik.model.DevicesEnvelope;
+import cloud.artik.model.UserEnvelope;
 
 
 public class ListDeviceTypesActivity extends AppCompatActivity {
@@ -44,14 +46,46 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
         initializeDevicesApi(accessToken);
 
         try {
-            usersApi.getUserDevicesAsync("92b683fa99164650b7907f855acc100b", 0, 100, true, new ApiCallback<DevicesEnvelope>() {
+            usersApi.getSelfAsync(new ApiCallback<UserEnvelope>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                    System.out.println(e.getCause());
+                }
+
+                @Override
+                public void onSuccess(UserEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    invokeListDevices(result);
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+                }
+            });
+
+
+        } catch (final ApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println(e.getCause());
+        }
+
+    }
+
+    private void invokeListDevices(final UserEnvelope userEnvelope) {
+        try {
+            usersApi.getUserDevicesAsync(userEnvelope.getData().getId(), 0, 100, true, new ApiCallback<DevicesEnvelope>() {
 
                 @Override
                 public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                     System.out.println(e.getCause());
-                    System.out.println("teste2");
                 }
 
                 @Override
@@ -86,6 +120,7 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
                         }
                     };
                     mainHandler.post(myRunnable);
+                    startSockectListenerService(userEnvelope.getData().getId(), devices);
                 }
 
                 @Override
@@ -102,9 +137,7 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
             e.printStackTrace();
             System.out.println(e.getMessage());
             System.out.println(e.getCause());
-            System.out.println("teste");
         }
-
     }
 
     private void initializeDevicesApi(final String accessToken) {
@@ -134,5 +167,24 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startSockectListenerService(final String userId, final Iterable<Device> devices) {
+        if (devices.iterator().hasNext()) {
+            final StringBuilder deviceIds = new StringBuilder();
+            for (final Device device : devices) {
+                deviceIds.append(device.getId()).append(",");
+            }
+            deviceIds.delete(deviceIds.length() - 1, deviceIds.length());
+
+            final Intent intent = new Intent(getApplicationContext(), FirehoseWebSocketListenerService.class);
+            final Bundle bundle = new Bundle();
+            bundle.putString(FirehoseWebSocketListenerService.ACCESS_TOKEN_KEY, accessToken);
+            bundle.putString(FirehoseWebSocketListenerService.USER_ID_KEY, userId);
+            bundle.putString(FirehoseWebSocketListenerService.DEVICE_IDS_KEY, deviceIds.toString());
+            intent.putExtras(bundle);
+            startService(intent) ;
+        }
+
     }
 }
