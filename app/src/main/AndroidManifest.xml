@@ -31,9 +31,8 @@
             </intent-filter>
             -->
         </activity>
-<<<<<<< HEAD
+
         <activity android:name=".ListDeviceTypesActivity" />
-=======
         <activity android:name=".ControlPanelActivity"/>
         <activity android:name=".NestThermostatActivity">
         </activity>
@@ -42,7 +41,6 @@
             android:name=".FirehoseWebSocketListenerService"
             android:enabled="true"
             android:exported="true"></service>
->>>>>>> ca4672e2a98a05604a1f098e012860cf62de7889
     </application>
 
 </manifest>

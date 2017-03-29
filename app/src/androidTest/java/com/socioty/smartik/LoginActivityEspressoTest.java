@@ -24,10 +24,11 @@ public class LoginActivityEspressoTest {
     public ActivityTestRule<LoginActivity> mActivityRule = new ActivityTestRule(LoginActivity.class);
 
     @Test
-    public void listGoesOverTheFold() {
+    public void loginActivitybtn() {
         onView(withId(R.id.btn)).check(matches(isDisplayed()));
 
         onView(withId(R.id.btn)).check(matches(withText("login")));
+        //onView(withId(R.id.btn)).check(matches(withText("SIGNUP")));
     }
 
 

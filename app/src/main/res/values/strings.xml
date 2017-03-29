@@ -10,9 +10,9 @@
     <string name="initialValue">0</string>
     <string name="light_off">Light Off</string>
     <string name="light_on">Light On</string>
-<<<<<<< HEAD
+
     <string name="title_activity_main">MainActivity</string>
-=======
+
 
     <string name="log_out">LogOut</string>
 
@@ -34,5 +34,4 @@
     <string name="scenarios_label">Scenarios</string>
     <string name="devices_label">Devices</string>
 
->>>>>>> ca4672e2a98a05604a1f098e012860cf62de7889
 </resources>
