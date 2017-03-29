@@ -10,5 +10,29 @@
     <string name="initialValue">0</string>
     <string name="light_off">Light Off</string>
     <string name="light_on">Light On</string>
+<<<<<<< HEAD
     <string name="title_activity_main">MainActivity</string>
+=======
+
+    <string name="log_out">LogOut</string>
+
+    <string name="celsius_label">°C"</string>
+    <string name="fahrenheit_label">°F"</string>
+
+    <string name="system_state_label">System</string>
+    <string name="temperature_label">Temperature</string>
+
+    <string-array name="state_array">
+        <item>Off</item>
+        <item>Auto</item>
+        <item>Heat</item>
+        <item>Cool</item>
+    </string-array>
+
+    <string name="status_label">Status</string>
+    <string name="rooms_label">Rooms</string>
+    <string name="scenarios_label">Scenarios</string>
+    <string name="devices_label">Devices</string>
+
+>>>>>>> ca4672e2a98a05604a1f098e012860cf62de7889
 </resources>

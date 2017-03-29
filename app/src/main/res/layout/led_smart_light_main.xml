@@ -48,41 +48,24 @@
 
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
+            android:layout_width="353dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="15dp" android:layout_marginLeft="20dp"
-            android:layout_marginBottom="5dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Setting:" android:textSize="16sp"
-            android:textColor="?attr/textColorAlertDialogListItem"/>
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp" android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp" android:gravity="center_horizontal"
+            android:orientation="horizontal">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Custom" android:fontFamily="sans-serif"
-                android:textStyle="normal|italic" android:textSize="16sp"
-                android:textAlignment="textStart" android:layout_marginLeft="10dp"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp" android:layout_marginLeft="20dp"
-            android:layout_marginBottom="5dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Current Color:" android:textSize="16sp"
-                android:textColor="@color/progress_gray_dark"/>
+                android:text="Current Color:" android:textColor="@color/progress_gray_dark"
+                android:textSize="16sp"/>
             <View
                 android:id="@+id/ledColorView"
                 android:layout_width="30dp"
-                android:background="@android:color/holo_orange_light"
                 android:layout_height="30dp"
-                android:layout_marginLeft="10dp"
-                />
+                android:layout_marginLeft="20dp"
+                android:background="@android:color/holo_orange_light"
+            />
         </LinearLayout>
 
 
@@ -126,15 +109,6 @@
             </RelativeLayout>
     </LinearLayout>
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:itemBackground="@color/colorPrimary"
-        app:itemIconTint="@color/darkGrey"
-        app:itemTextColor="@color/darkGrey"
-        app:menu="@menu/buttom_navigation" />
 
 
 </RelativeLayout>

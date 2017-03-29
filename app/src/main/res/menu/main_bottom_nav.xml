@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/status_action_item"
+        android:icon="@drawable/ic_status_black_24dp"
+        android:title="@string/status_label">
+    </item>
+
+    <item android:id="@+id/rooms_action_item"
+        android:icon="@drawable/ic_rooms_black_24dp"
+        android:title="@string/rooms_label">
+    </item>
+
+    <item android:id="@+id/scenarios_action_item"
+        android:icon="@drawable/ic_scenarios_black_24dp"
+        android:title="@string/scenarios_label">
+    </item>
+
+    <item android:id="@+id/devices_action_item"
+        android:icon="@drawable/ic_devices_outline_black_24dp"
+        android:title="@string/devices_label">
+    </item>
+
+
+
+</menu>
