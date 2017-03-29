@@ -1,5 +1,6 @@
 package com.socioty.smartik;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -116,6 +117,7 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
                         }
                     };
                     mainHandler.post(myRunnable);
+                    startSockectListenerService(userEnvelope.getData().getId(), devices);
                 }
 
                 @Override
@@ -143,5 +145,24 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
         artikcloud_oauth.setAccessToken(accessToken);
 
         usersApi = new UsersApi(mApiClient);
+    }
+
+    private void startSockectListenerService(final String userId, final Iterable<Device> devices) {
+        if (devices.iterator().hasNext()) {
+            final StringBuilder deviceIds = new StringBuilder();
+            for (final Device device : devices) {
+                deviceIds.append(device.getId()).append(",");
+            }
+            deviceIds.delete(deviceIds.length() - 1, deviceIds.length());
+
+            final Intent intent = new Intent(getApplicationContext(), FirehoseWebSocketListenerService.class);
+            final Bundle bundle = new Bundle();
+            bundle.putString(FirehoseWebSocketListenerService.ACCESS_TOKEN_KEY, accessToken);
+            bundle.putString(FirehoseWebSocketListenerService.USER_ID_KEY, userId);
+            bundle.putString(FirehoseWebSocketListenerService.DEVICE_IDS_KEY, deviceIds.toString());
+            intent.putExtras(bundle);
+            startService(intent) ;
+        }
+
     }
 }
