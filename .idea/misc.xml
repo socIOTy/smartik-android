@@ -27,6 +27,7 @@
       </value>
     </option>
   </component>
+<<<<<<< HEAD
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />
@@ -43,4 +44,7 @@
   <component name="ProjectType">
     <option name="id" value="Android" />
   </component>
+=======
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
+>>>>>>> 75de897f6705cad7515461bf8c9f28939de2196d
 </project>

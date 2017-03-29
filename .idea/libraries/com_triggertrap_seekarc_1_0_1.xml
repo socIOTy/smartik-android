@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="com.triggertrap.seekarc-1.0.1">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.android/build-cache/6419010aa54d7873e8fe0c7c34c5149afb21e58f/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/6419010aa54d7873e8fe0c7c34c5149afb21e58f/output/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.andreabaccega/com.triggertrap.seekarc/1.0.1/81922a03c6cd0630fceef0c00f44f6fb06fd8d4c/com.triggertrap.seekarc-1.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
