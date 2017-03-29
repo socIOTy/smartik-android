@@ -18,6 +18,7 @@ import cloud.artik.client.Configuration;
 import cloud.artik.client.auth.OAuth;
 import cloud.artik.model.Device;
 import cloud.artik.model.DevicesEnvelope;
+import cloud.artik.model.UserEnvelope;
 
 
 public class ListDeviceTypesActivity extends AppCompatActivity {
@@ -39,14 +40,46 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
         initializeDevicesApi(accessToken);
 
         try {
-            usersApi.getUserDevicesAsync("92b683fa99164650b7907f855acc100b", 0, 100, true, new ApiCallback<DevicesEnvelope>() {
+            usersApi.getSelfAsync(new ApiCallback<UserEnvelope>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                    System.out.println(e.getCause());
+                }
+
+                @Override
+                public void onSuccess(UserEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    invokeListDevices(result);
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+                }
+            });
+
+
+        } catch (final ApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println(e.getCause());
+        }
+
+    }
+
+    private void invokeListDevices(final UserEnvelope userEnvelope) {
+        try {
+            usersApi.getUserDevicesAsync(userEnvelope.getData().getId(), 0, 100, true, new ApiCallback<DevicesEnvelope>() {
 
                 @Override
                 public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                     System.out.println(e.getCause());
-                    System.out.println("teste2");
                 }
 
                 @Override
@@ -99,9 +132,7 @@ public class ListDeviceTypesActivity extends AppCompatActivity {
             e.printStackTrace();
             System.out.println(e.getMessage());
             System.out.println(e.getCause());
-            System.out.println("teste");
         }
-
     }
 
     private void initializeDevicesApi(final String accessToken) {
