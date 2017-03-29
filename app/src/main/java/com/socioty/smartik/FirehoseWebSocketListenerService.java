@@ -17,6 +17,8 @@ import cloud.artik.websocket.FirehoseWebSocket;
 
 public class FirehoseWebSocketListenerService extends Service {
 
+    public static final String DEVICE_MESSAGE_BROADCAST_ACTION_PATTERN = "DEVICE_MESSAGE_%s";
+
     public static final String ACCESS_TOKEN_KEY = "ACCESS_TOKEN";
     public static final String USER_ID_KEY = "USER_ID";
     public static final String DEVICE_IDS_KEY = "DEVICE_IDS";
@@ -82,7 +84,7 @@ public class FirehoseWebSocketListenerService extends Service {
 
                         @Override
                         public void onMessage(MessageOut message) {
-                            System.out.println("Firehose: onMessage: " + message);
+                            sendBroadcastMessage(message);
                         }
 
                         @Override
@@ -111,6 +113,13 @@ public class FirehoseWebSocketListenerService extends Service {
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void sendBroadcastMessage(MessageOut message) {
+        Intent intent = new Intent();
+        intent.setAction(String.format(DEVICE_MESSAGE_BROADCAST_ACTION_PATTERN, message.getSdid()));
+
+        sendBroadcast(intent);
     }
 
 }

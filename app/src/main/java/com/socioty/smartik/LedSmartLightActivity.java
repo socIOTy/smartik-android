@@ -1,13 +1,19 @@
 package com.socioty.smartik;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -36,6 +42,18 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
     public static final String KEY_ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String KEY_DEVICE_ID = "DEVICE_ID";
+
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        public static final String TAG = "BroadcastReceiver";
+
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            String action = intent.getAction();
+            Log.v(TAG,"received action:" + action);
+            Snackbar.make(findViewById(R.id.switcher), "Device status was updated!", Snackbar.LENGTH_LONG).show();
+        }
+    };
 
     private String deviceId;
 
@@ -98,6 +116,16 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
         configureColorButton();
         configureIntensityPicker();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(String.format(FirehoseWebSocketListenerService.DEVICE_MESSAGE_BROADCAST_ACTION_PATTERN, deviceId));
+        registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 
     private void enableComponentsBasedOnState(final boolean state) {
