@@ -1,21 +1,7 @@
-package com.socioty.smartik;
+package com.socioty.smartik.Model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Base64;
-
-import com.google.gson.JsonObject;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.impl.Base64UrlCodec;
 
 /**
  * Created by serhiipianykh on 2017-03-15.
@@ -26,8 +12,10 @@ public class Token {
     private final static String sharedPref = "com.socioty.smartik.loginCredentials";
     private final static String tokenPref = "com.socioty.smartik.loginCredentials.token";
     private final static String tokenExpPref = "com.socioty.smartik.loginCredentials.exp";
+    private final static String sharedUserId = "com.socioty.smartil.loginCredentuals.id";
     public static Token sToken;
     private String mKey;
+    private static String userId;
     private long exp;
 
 
@@ -77,6 +65,7 @@ public class Token {
         SharedPreferences sharedPreferences = context.getSharedPreferences(sharedPref, Context.MODE_PRIVATE);
         jwt = sharedPreferences.getString(tokenPref,null);
         exp = sharedPreferences.getLong(tokenExpPref, 0);
+        userId = sharedPreferences.getString(sharedUserId, null);
         if (jwt == null || jwt.equals("")) return null;
 
         date = System.currentTimeMillis() /1000;
@@ -93,4 +82,14 @@ public class Token {
         editor.commit();
     }
 
+    public static void setUserId(Context context, String userId) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(sharedPref, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(sharedUserId, userId);
+        editor.commit();
+    }
+
+    public static String getUserId() {
+        return userId;
+    }
 }

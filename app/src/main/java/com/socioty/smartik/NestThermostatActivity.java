@@ -1,10 +1,6 @@
 package com.socioty.smartik;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,10 +8,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.socioty.smartik.Model.Token;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -288,23 +285,27 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
     }
 
     private void updateState(final String jsonString) {
-        try {
-            updateState(new JSONObject(jsonString));
-        } catch (final JSONException e) {
-            throw new RuntimeException(e);
+        if (jsonString != null && jsonString != "") {
+            try {
+                updateState(new JSONObject(jsonString));
+            } catch (final JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     private void updateState(final JSONObject json) {
-        try {
-            final int temperatureValue = (int)Math.round(json.getDouble("target_temperature_c"));
-            currentTemp = temperatureValue;
+        if (json != null) {
+            try {
+                final int temperatureValue = (int) Math.round(json.getDouble("target_temperature_c"));
+                currentTemp = temperatureValue;
 
-            final boolean canHeat = json.getBoolean("can_heat");
-            final boolean canCool = json.getBoolean("can_cool");
-            state = Mode.parseMode(canHeat, canCool).ordinal();
-        } catch (final JSONException e) {
-            throw new RuntimeException(e);
+                final boolean canHeat = json.getBoolean("can_heat");
+                final boolean canCool = json.getBoolean("can_cool");
+                state = Mode.parseMode(canHeat, canCool).ordinal();
+            } catch (final JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

@@ -10,6 +10,19 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.socioty.smartik.Model.Token;
+
+import java.util.List;
+import java.util.Map;
+
+import cloud.artik.api.UsersApi;
+import cloud.artik.client.ApiCallback;
+import cloud.artik.client.ApiClient;
+import cloud.artik.client.ApiException;
+import cloud.artik.client.Configuration;
+import cloud.artik.client.auth.OAuth;
+import cloud.artik.model.UserEnvelope;
+
 public class LoginActivity extends AppCompatActivity {
 
     private static final String ARTIK_CLOUD_AUTH_BASE_URL = "https://accounts.artik.cloud";
@@ -18,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private View mLoginView;
     private WebView mWebView;
-
+    private UsersApi usersApi;
     private Token token;
 
     @Override
@@ -72,7 +85,8 @@ public class LoginActivity extends AppCompatActivity {
                         long exp = System.currentTimeMillis()/1000 + expIn;
                         System.out.println("token: " + accessToken);
                         token.setToken(accessToken, exp, getApplicationContext());
-                        //token.get(getApplicationContext());
+                        initializeDevicesApi(accessToken);
+                        getUser();
                         mLoginView.setVisibility(View.VISIBLE);
                         mWebView.setVisibility(View.GONE);
                         startMessageActivity();
@@ -108,4 +122,45 @@ public class LoginActivity extends AppCompatActivity {
         mWebView.loadUrl(getAuthorizationRequestUri());
     }
 
+    private void getUser() {
+        try {
+            usersApi.getSelfAsync(new ApiCallback<UserEnvelope>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                    System.out.println(e.getCause());
+                }
+
+                @Override
+                public void onSuccess(UserEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    token.setUserId(getApplicationContext(), result.getData().getId());
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+                }
+            });
+
+
+        } catch (final ApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println(e.getCause());
+        }
+    }
+
+    private void initializeDevicesApi(final String accessToken) {
+        final ApiClient mApiClient = Configuration.getDefaultApiClient();
+
+        // Configure OAuth2 access token for authorization: artikcloud_oauth
+        final OAuth artikcloud_oauth = (OAuth) mApiClient.getAuthentication("artikcloud_oauth");
+        artikcloud_oauth.setAccessToken(accessToken);
+
+        usersApi = new UsersApi(mApiClient);
+    }
 }

@@ -1,13 +1,9 @@
 package com.socioty.smartik;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.enrico.colorpicker.colorDialog;
+import com.socioty.smartik.Model.Token;
 import com.triggertrap.seekarc.SeekArc;
 
 import org.json.JSONException;
@@ -296,23 +293,27 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
     }
 
     private void updateState(final String jsonString) {
-        try {
-            updateState(new JSONObject(jsonString));
-        } catch (final JSONException e) {
-            throw new RuntimeException(e);
+        if (jsonString != "" && jsonString != null) {
+            try {
+                updateState(new JSONObject(jsonString));
+            } catch (final JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     private void updateState(final JSONObject json) {
-        try {
-            isOn = json.getBoolean("state");
-            intensity = json.getInt("intensity");
-            JSONObject colors = json.getJSONObject("colorRGB");
-            rColor = colors.getInt("r");
-            gColor = colors.getInt("g");
-            bColor = colors.getInt("b");
-        } catch (final JSONException e) {
-            throw new RuntimeException(e);
+        if (json != null) {
+            try {
+                isOn = json.getBoolean("state");
+                intensity = json.getInt("intensity");
+                JSONObject colors = json.getJSONObject("colorRGB");
+                rColor = colors.getInt("r");
+                gColor = colors.getInt("g");
+                bColor = colors.getInt("b");
+            } catch (final JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

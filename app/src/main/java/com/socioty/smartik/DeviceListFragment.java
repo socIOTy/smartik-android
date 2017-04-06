@@ -3,17 +3,31 @@ package com.socioty.smartik;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.socioty.smartik.Model.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import cloud.artik.api.DevicesApi;
 import cloud.artik.api.UsersApi;
 import cloud.artik.client.ApiCallback;
 import cloud.artik.client.ApiClient;
@@ -21,6 +35,7 @@ import cloud.artik.client.ApiException;
 import cloud.artik.client.Configuration;
 import cloud.artik.client.auth.OAuth;
 import cloud.artik.model.Device;
+import cloud.artik.model.DeviceEnvelope;
 import cloud.artik.model.DevicesEnvelope;
 import cloud.artik.model.UserEnvelope;
 
@@ -35,9 +50,17 @@ public class DeviceListFragment extends Fragment {
     public static final String LED_SMART_LIGHT_DEVICE_TYPE_ID = "dt71c282d4fad94a69b22fa6d1e449fbbb";
     public static final String NEST_THERMOSTAT_DEVICE_TYPE_ID = "dt5247379d38fa4ac78e4723f8e92de681";
 
+    public static final String KEY_DEVICE_NAME = "DEVICE_NAME";
+    public static final String KEY_DEVICE_TYPE = "DEVICE_TYPE";
+
     private String accessToken;
 
     private UsersApi usersApi;
+    private DevicesApi devicesApi;
+
+    private FloatingActionButton addDeviceBtn;
+
+    private String userId;
 
     public static DeviceListFragment newInstance() {
 
@@ -52,6 +75,7 @@ public class DeviceListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         accessToken = Token.sToken.getToken();
+        userId = Token.sToken.getUserId();
         initializeDevicesApi(accessToken);
     }
 
@@ -59,42 +83,26 @@ public class DeviceListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.activity_list_device_types, container, false);
 
-        try {
-            usersApi.getSelfAsync(new ApiCallback<UserEnvelope>() {
-                @Override
-                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-                    e.printStackTrace();
-                    System.out.println(e.getMessage());
-                    System.out.println(e.getCause());
-                }
+        final ManageDeviceFragment searchDialog = ManageDeviceFragment.newInstance();
+        searchDialog.setTargetFragment(this, 0);
 
-                @Override
-                public void onSuccess(UserEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
-                    invokeListDevices(result);
-                }
+        addDeviceBtn = (FloatingActionButton) v.findViewById(R.id.add_device_fab);
+        addDeviceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getChildFragmentManager();
+                searchDialog.show(fm, "BLA");
+            }
+        });
 
-                @Override
-                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-                }
-
-                @Override
-                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
-                }
-            });
-
-
-        } catch (final ApiException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
-        }
+        invokeListDevices();
 
         return v;
     }
 
-    private void invokeListDevices(final UserEnvelope userEnvelope) {
+    private void invokeListDevices() {
         try {
-            usersApi.getUserDevicesAsync(userEnvelope.getData().getId(), 0, 100, true, new ApiCallback<DevicesEnvelope>() {
+            usersApi.getUserDevicesAsync(userId, 0, 100, true, new ApiCallback<DevicesEnvelope>() {
 
                 @Override
                 public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
@@ -135,7 +143,7 @@ public class DeviceListFragment extends Fragment {
                         }
                     };
                     mainHandler.post(myRunnable);
-                    startSockectListenerService(userEnvelope.getData().getId(), devices);
+                    startSockectListenerService(userId, devices);
                 }
 
                 @Override
@@ -163,6 +171,7 @@ public class DeviceListFragment extends Fragment {
         artikcloud_oauth.setAccessToken(accessToken);
 
         usersApi = new UsersApi(mApiClient);
+        devicesApi = new DevicesApi(mApiClient);
     }
 
     private void startSockectListenerService(final String userId, final Iterable<Device> devices) {
@@ -184,5 +193,70 @@ public class DeviceListFragment extends Fragment {
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == 10) {
+            String name = data.getExtras().getString(KEY_DEVICE_NAME);
+            int type = data.getExtras().getInt(KEY_DEVICE_TYPE);
+            String dtid = "";
+            if (type == 0) {
+                dtid = LED_SMART_LIGHT_DEVICE_TYPE_ID;
+            } else {
+                dtid = NEST_THERMOSTAT_DEVICE_TYPE_ID;
+            }
+            addDevice(name,dtid);
+        }
+    }
 
+    private void addDevice(String name, String dtid) {
+        final RequestQueue queue = Volley.newRequestQueue(getContext());
+        try {
+            devicesApi.addDeviceAsync(new Device().name(name).uid(userId).dtid(dtid), new ApiCallback<DeviceEnvelope>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    //TODO: TREAT!!
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onSuccess(DeviceEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    final JSONObject object = new JSONObject();
+                    try {
+                        object.put("deviceId", result.getData().getId());
+                        object.put("floorNumber", 0);
+                        object.put("roomName", "Living room");
+
+                        final JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                                (Request.Method.POST, "https://smartik.herokuapp.com/rest/device", object, new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(final JSONObject response) {
+                                        System.out.println("Response: " + response);
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(final VolleyError error) {
+                                        // TODO Auto-generated method stub
+                                    }
+                                });
+                        queue.add(jsObjRequest);
+                        invokeListDevices();
+                    } catch (final JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+                    //NOTHING TO DO
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+                    //NOTHING TO DO
+                }
+            });
+        } catch (final ApiException e) {
+            e.printStackTrace();
+        }
+    }
 }

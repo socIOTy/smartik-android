@@ -31,4 +31,11 @@
     <string name="scenarios_label">Scenarios</string>
     <string name="devices_label">Devices</string>
 
+    <string name="device_name_label">Device Name</string>
+
+    <string-array name="device_types">
+        <item>Light Bulb</item>
+        <item>Thermostat</item>
+    </string-array>
+
 </resources>

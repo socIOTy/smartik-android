@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.socioty.smartik.Model.Token;
+
 /**
  * Created by serhiipianykh on 2017-03-23.
  */
