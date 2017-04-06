@@ -11,6 +11,9 @@
     <string name="light_off">Light Off</string>
     <string name="light_on">Light On</string>
 
+    <string name="title_activity_main">MainActivity</string>
+
+
     <string name="log_out">LogOut</string>
 
     <string name="celsius_label">°C"</string>
