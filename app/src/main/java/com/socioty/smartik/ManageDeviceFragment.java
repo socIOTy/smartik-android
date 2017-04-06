@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 
 /**
@@ -21,6 +22,7 @@ public class ManageDeviceFragment extends DialogFragment {
 
     private EditText deviceName;
     private Spinner deviceTypes;
+    private ImageButton deleteDeviceBtn;
 
     public static ManageDeviceFragment newInstance() {
 
@@ -34,6 +36,14 @@ public class ManageDeviceFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v = LayoutInflater.from(getContext()).inflate(R.layout.fragment_device_dialog, null);
+
+        deleteDeviceBtn = (ImageButton)v.findViewById(R.id.device_delete_btn);
+        deleteDeviceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendResult(20);
+            }
+        });
 
         deviceName = (EditText)v.findViewById(R.id.new_device_name);
         deviceTypes = (Spinner)v.findViewById(R.id.device_type_spinner);
