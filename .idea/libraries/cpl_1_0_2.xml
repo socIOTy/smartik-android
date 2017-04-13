@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="cpl-1.0.2">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.android/build-cache/2b95d66526f8a314dfcd070bc01ab0b41ffcc150/output/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.android/build-cache/2b95d66526f8a314dfcd070bc01ab0b41ffcc150/output/res" />
+      <root url="file://$USER_HOME$/.android/build-cache/ad402fdf86a4fc6b50994f9fa3078ed13773e2cb/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/ad402fdf86a4fc6b50994f9fa3078ed13773e2cb/output/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

@@ -19,8 +19,8 @@
 
         <RelativeLayout android:layout_width="match_parent"
                         android:layout_height="180dp"
-                        android:background="@drawable/temp_background"
-            android:clickable="true">
+                        android:background="@drawable/living_room"
+                        android:clickable="true">
             <Button
                 android:id="@+id/f_button"
                 android:layout_width="50dp"
