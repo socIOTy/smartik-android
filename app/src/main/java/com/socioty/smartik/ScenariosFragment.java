@@ -1,6 +1,12 @@
 package com.socioty.smartik;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +36,14 @@ public class ScenariosFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("scenarioAction");
+        getContext().registerReceiver(actionReceiver, intentFilter);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_scenarios, container, false);
 
@@ -46,4 +60,15 @@ public class ScenariosFragment extends Fragment {
 
         return v;
     }
+
+    private final BroadcastReceiver actionReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle data = intent.getExtras();
+            String message = data.getString("broadcastMessage");
+
+            Snackbar.make(getView(),message, Snackbar.LENGTH_SHORT).show();
+        }
+    };
+
 }
