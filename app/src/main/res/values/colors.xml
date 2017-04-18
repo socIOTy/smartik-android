@@ -4,4 +4,16 @@
     <color name="colorPrimaryDark">#757575</color>
     <color name="colorAccent">#f7d94b</color>
     <color name="btnBg">#0a3d54</color>
+
+    <color name="first_slide_background">#b5b5b5</color>
+    <color name="first_slide_buttons">#959595</color>
+
+    <color name="second_slide_background">#6692b5</color>
+    <color name="second_slide_buttons">#558095</color>
+
+    <color name="third_slide_background">#66b0b5</color>
+    <color name="third_slide_buttons">#55a0b5</color>
+
+    <color name="fourth_slide_background">#9c8fbd</color>
+    <color name="fourth_slide_buttons">#8c8faa</color>
 </resources>
