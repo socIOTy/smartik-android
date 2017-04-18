@@ -1,4 +1,4 @@
-package com.socioty.smartik.Model;
+package com.socioty.smartik.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,10 +13,14 @@ public class Token {
     private final static String tokenPref = "com.socioty.smartik.loginCredentials.token";
     private final static String tokenExpPref = "com.socioty.smartik.loginCredentials.exp";
     private final static String sharedUserId = "com.socioty.smartil.loginCredentuals.id";
+
     public static Token sToken;
-    private String mKey;
     private static String userId;
+
+    private String mKey;
+    private String email;
     private long exp;
+    private DeviceMap deviceMap;
 
 
     public Token(String key) {
@@ -55,6 +59,21 @@ public class Token {
         return this.exp;
     }
 
+    public DeviceMap getDeviceMap() {
+        return deviceMap;
+    }
+
+    public void setDeviceMap(DeviceMap deviceMap) {
+        this.deviceMap = deviceMap;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     private String getSavedToken(Context context) {
 

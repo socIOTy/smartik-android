@@ -1,18 +1,14 @@
 package com.socioty.smartik;
 
-import android.app.NotificationManager;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 
-import com.socioty.smartik.Model.ScenarioAction;
-import com.socioty.smartik.Model.Token;
+import com.socioty.smartik.model.ScenarioAction;
+import com.socioty.smartik.model.Token;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +23,6 @@ import cloud.artik.model.Action;
 import cloud.artik.model.ActionArray;
 import cloud.artik.model.Actions;
 import cloud.artik.model.Device;
-import cloud.artik.model.DeviceEnvelope;
 import cloud.artik.model.DevicesEnvelope;
 import cloud.artik.model.MessageIDEnvelope;
 

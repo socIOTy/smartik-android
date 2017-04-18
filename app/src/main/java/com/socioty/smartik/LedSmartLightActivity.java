@@ -12,7 +12,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.enrico.colorpicker.colorDialog;
-import com.socioty.smartik.Model.Token;
+import com.socioty.smartik.model.Token;
 import com.triggertrap.seekarc.SeekArc;
 
 import org.json.JSONException;

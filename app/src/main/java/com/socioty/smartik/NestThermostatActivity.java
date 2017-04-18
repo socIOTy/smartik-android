@@ -12,7 +12,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.socioty.smartik.Model.Token;
+import com.socioty.smartik.model.Token;
 
 import org.json.JSONException;
 import org.json.JSONObject;

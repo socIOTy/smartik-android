@@ -14,8 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.socioty.smartik.Model.Scenario;
-import com.socioty.smartik.Model.ScenarioAction;
+import com.socioty.smartik.model.Scenario;
+import com.socioty.smartik.model.ScenarioAction;
 
 import java.util.ArrayList;
 import java.util.List;

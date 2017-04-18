@@ -9,8 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.socioty.smartik.Model.Scenario;
-import com.socioty.smartik.Model.ScenarioAction;
+import com.socioty.smartik.model.Scenario;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.socioty.smartik.Model;
+package com.socioty.smartik.model;
 
 /**
  * Created by serhiipianykh on 2017-04-17.

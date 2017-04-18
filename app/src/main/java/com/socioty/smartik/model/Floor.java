@@ -17,7 +17,11 @@ public class Floor {
 	
 	public Set<Room> getRooms() {
 		return Collections.unmodifiableSet(rooms);
-	}	
+	}
+
+	public int countRooms() {
+		return rooms.size();
+	}
 
 	@Override
 	public String toString() {
