@@ -18,7 +18,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.socioty.smartik.Model.Token;
+import com.socioty.smartik.model.Token;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +37,6 @@ import cloud.artik.client.auth.OAuth;
 import cloud.artik.model.Device;
 import cloud.artik.model.DeviceEnvelope;
 import cloud.artik.model.DevicesEnvelope;
-import cloud.artik.model.UserEnvelope;
 
 /**
  * Created by serhiipianykh on 2017-03-23.
@@ -209,7 +208,6 @@ public class DeviceListFragment extends Fragment {
     }
 
     private void addDevice(String name, String dtid) {
-        final RequestQueue queue = Volley.newRequestQueue(getContext());
         try {
             devicesApi.addDeviceAsync(new Device().name(name).uid(userId).dtid(dtid), new ApiCallback<DeviceEnvelope>() {
                 @Override
@@ -238,7 +236,7 @@ public class DeviceListFragment extends Fragment {
                                         // TODO Auto-generated method stub
                                     }
                                 });
-                        queue.add(jsObjRequest);
+                        RequestUtils.addRequest(jsObjRequest);
                         invokeListDevices();
                     } catch (final JSONException e) {
                         e.printStackTrace();

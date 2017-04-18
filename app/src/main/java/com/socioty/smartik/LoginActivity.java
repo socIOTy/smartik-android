@@ -10,7 +10,16 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
-import com.socioty.smartik.Model.Token;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.Gson;
+import com.socioty.smartik.model.DeviceMap;
+import com.socioty.smartik.model.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -45,8 +54,11 @@ public class LoginActivity extends AppCompatActivity {
         mLoginView.setVisibility(View.VISIBLE);
         Button button = (Button)findViewById(R.id.btn);
 
+        RequestUtils.initialize(this);
+
         token = Token.get(getApplicationContext());
         if (Token.sToken.getToken() != null) {
+            loadToken(Token.sToken.getToken());
             startMessageActivity();
         }
 
@@ -85,8 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                         long exp = System.currentTimeMillis()/1000 + expIn;
                         System.out.println("token: " + accessToken);
                         token.setToken(accessToken, exp, getApplicationContext());
-                        initializeDevicesApi(accessToken);
-                        getUser();
+                        loadToken(accessToken);
                         mLoginView.setVisibility(View.VISIBLE);
                         mWebView.setVisibility(View.GONE);
                         startMessageActivity();
@@ -122,6 +133,12 @@ public class LoginActivity extends AppCompatActivity {
         mWebView.loadUrl(getAuthorizationRequestUri());
     }
 
+
+    private void loadToken(final String accessToken) {
+        initializeApi(accessToken);
+        getUser();
+    }
+
     private void getUser() {
         try {
             usersApi.getSelfAsync(new ApiCallback<UserEnvelope>() {
@@ -135,6 +152,26 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UserEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
                     token.setUserId(getApplicationContext(), result.getData().getId());
+                    final String email = result.getData().getEmail();
+                    token.setEmail(email);
+                    final JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                            (Request.Method.GET, "https://smartik.herokuapp.com/rest/account/" + email, null, new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(final JSONObject response) {
+                                    try {
+                                        final DeviceMap deviceMap = new Gson().fromJson(response.getJSONObject("deviceMap").toString(), DeviceMap.class);
+                                        token.setDeviceMap(deviceMap);
+                                    } catch (JSONException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(final VolleyError error) {
+                                    throw new RuntimeException(error);
+                                }
+                            });
+                    RequestUtils.addRequest(jsObjRequest);
                 }
 
                 @Override
@@ -154,7 +191,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void initializeDevicesApi(final String accessToken) {
+    private void initializeApi(final String accessToken) {
         final ApiClient mApiClient = Configuration.getDefaultApiClient();
 
         // Configure OAuth2 access token for authorization: artikcloud_oauth
