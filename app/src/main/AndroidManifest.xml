@@ -43,6 +43,8 @@
         <activity android:name=".NestThermostatActivity">
         </activity>
 
+        <service android:name=".ScenariosService"/>
+
         <service
             android:name=".FirehoseWebSocketListenerService"
             android:enabled="true"
