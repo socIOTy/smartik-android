@@ -34,13 +34,15 @@ public final class RequestUtils {
         @Override
         public Map getHeaders() throws AuthFailureError {
             final Map headers = new HashMap<>();
-            headers.put("Authorization", "Basic " + Base64.encodeToString(Token.sToken.getEmail().getBytes(), Base64.NO_WRAP));
+            final String email = Token.sToken.getEmail();
+            headers.put("Authorization", "Basic " + Base64.encodeToString(email.getBytes(), Base64.NO_WRAP));
             return headers;
         }
     }
 
     public static final String BACKEND_BASE_URL = "https://smartik.herokuapp.com";
     public static final String BACKEND_ACCOUNT_BY_MAIL_RESOURCE_PATTERN = BACKEND_BASE_URL + "/rest/account/%s";
+    public static final String BACKEND_DEVICE_MAP_RESOURCE = BACKEND_BASE_URL + "/rest/deviceMap";
     public static final String BACKEND_DEVICE_RESOURCE = BACKEND_BASE_URL + "/rest/device";
     public static final String DEVICE_MAP_PROPERTY = "deviceMap";
 

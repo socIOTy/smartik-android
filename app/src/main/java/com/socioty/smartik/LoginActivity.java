@@ -49,18 +49,17 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mWebView = (WebView)findViewById(R.id.webview);
+        mWebView = (WebView) findViewById(R.id.webview);
         mWebView.setVisibility(View.GONE);
         mLoginView = findViewById(R.id.ask_for_login);
         mLoginView.setVisibility(View.VISIBLE);
-        Button button = (Button)findViewById(R.id.btn);
+        Button button = (Button) findViewById(R.id.btn);
 
         RequestUtils.initialize(this);
 
         token = Token.get(getApplicationContext());
         if (Token.sToken.getToken() != null) {
             loadToken(Token.sToken.getToken());
-            startMessageActivity();
         }
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String uri) {
-                if ( uri.startsWith(REDIRECT_URL) ) {
+                if (uri.startsWith(REDIRECT_URL)) {
                     // Login succeed or back to login after signup
 
                     if (uri.contains("access_token=")) { //login succeed
@@ -95,13 +94,13 @@ public class LoginActivity extends AppCompatActivity {
                         String[] sExpArray = uri.split("expires_in=");
                         String strExp = sExpArray[1];
                         long expIn = Long.parseLong(strExp);
-                        long exp = System.currentTimeMillis()/1000 + expIn;
+                        long exp = System.currentTimeMillis() / 1000 + expIn;
                         System.out.println("token: " + accessToken);
                         token.setToken(accessToken, exp, getApplicationContext());
-                        loadToken(accessToken);
+                        token = Token.sToken;
                         mLoginView.setVisibility(View.VISIBLE);
                         mWebView.setVisibility(View.GONE);
-                        startMessageActivity();
+                        loadToken(accessToken);
                     } else { // No access token available. Signup finishes and user clicks "Back to login"
                         // Example of uri: http://localhost:8000/acdemo/index.php?origin=signup&status=login_request
                         //
@@ -162,6 +161,7 @@ public class LoginActivity extends AppCompatActivity {
                                     try {
                                         final DeviceMap deviceMap = JsonUtils.GSON.fromJson(response.getJSONObject(RequestUtils.DEVICE_MAP_PROPERTY).toString(), DeviceMap.class);
                                         token.setDeviceMap(deviceMap);
+                                        startMessageActivity();
                                     } catch (JSONException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -173,6 +173,8 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             });
                     RequestUtils.addRequest(jsObjRequest);
+
+
                 }
 
                 @Override

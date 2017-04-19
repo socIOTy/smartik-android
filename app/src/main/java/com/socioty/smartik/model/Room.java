@@ -1,10 +1,11 @@
 package com.socioty.smartik.model;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Room {
+public class Room implements Serializable {
 
 	private String name;
 	private byte[] imageBytes;
@@ -24,6 +25,10 @@ public class Room {
 
 	public byte[] getImageBytes() {
 		return imageBytes;
+	}
+
+	public void setImageBytes(byte[] imageBytes) {
+		this.imageBytes = imageBytes;
 	}
 
 	public Set<String> getDeviceIds() {
