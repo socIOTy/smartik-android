@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.android.volley.Request;
@@ -64,8 +65,39 @@ public class RoomDetailsActivity extends AppCompatActivity {
 
         initializeApi(accessToken);
         this.room = Token.sToken.getDeviceMap().getRoom(getIntent().getExtras().getString("roomName"));
+
+        initializeDeleteButton();
         initializeImage(room);
         initializeDeviceList(accessToken, userId, room);
+    }
+
+    private void initializeDeleteButton() {
+        final ImageButton deleteRoomBtn = (ImageButton) findViewById(R.id.room_delete_btn);
+        deleteRoomBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final DeviceMap deviceMap = Token.sToken.getDeviceMap();
+                deviceMap.removeRoom(room);
+                try {
+                    final String deviceMapJsonString = JsonUtils.GSON.toJson(Token.sToken.getDeviceMap());
+                    final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
+                            (Request.Method.POST, RequestUtils.BACKEND_DEVICE_MAP_RESOURCE, new JSONObject(deviceMapJsonString), new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(final JSONObject response) {
+                                    RoomDetailsActivity.this.finish();
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(final VolleyError error) {
+                                    throw new RuntimeException(error);
+                                }
+                            });
+                    RequestUtils.addRequest(jsObjRequest);
+                } catch (final JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     private void initializeApi(final String accessToken) {
@@ -211,10 +243,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
             intent.putExtras(bundle);
             startService(intent) ;
         }
-
     }
-
-
 
 
 }

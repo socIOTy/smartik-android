@@ -11,13 +11,6 @@ import java.util.List;
 
 public class DeviceMap {
 
-    private static final Comparator<Room> roomComparatorByName = new Comparator<Room>() {
-        @Override
-        public int compare(final Room o1, final Room o2) {
-            return o1.getName().compareTo(o2.getName());
-        }
-    };
-
     private List<Floor> floors;
 
     protected DeviceMap() {
@@ -35,6 +28,16 @@ public class DeviceMap {
         this.floors = floors;
     }
 
+    public void addRoom(final int floorNumber, final String name) {
+        final int currentFloorsSize = floors.size();
+        if (floorNumber >= currentFloorsSize) {
+            for (int k = currentFloorsSize; k <= floorNumber; k++) {
+                floors.add(new Floor(Collections.<Room> emptySet()));
+            }
+        }
+        floors.get(floorNumber).addRoom(new Room(name, Collections.<String>emptySet()));
+    }
+
     public Room getRoom(final String name) {
         for (final Floor floor : floors) {
             for (final Room room : floor.getRooms()) {
@@ -44,6 +47,17 @@ public class DeviceMap {
             }
         }
         return null;
+    }
+
+    public boolean removeRoom(final Room roomToDelete) {
+        for (final Floor floor : floors) {
+            for (final Room room : floor.getRooms()) {
+                if (room.equals(roomToDelete)) {
+                    return floor.removeRoom(room);
+                }
+            }
+        }
+        return false;
     }
 
     public int countRooms() {
@@ -57,9 +71,7 @@ public class DeviceMap {
     public List<Room> getAllRooms() {
         final List<Room> result = new ArrayList<>(countRooms());
         for (final Floor floor : floors) {
-            final List<Room> sortedRoomsByFloor = new ArrayList<>(floor.getRooms());
-            Collections.sort(sortedRoomsByFloor, roomComparatorByName);
-            result.addAll(sortedRoomsByFloor);
+            result.addAll(floor.getRoomsList());
         }
         return Collections.unmodifiableList(result);
     }

@@ -41,4 +41,21 @@
         <item>Thermostat</item>
     </string-array>
 
+    <string name="floor_number">Floor %d</string>
+    <string name="add_room">Add</string>
+    <string name="room_name_label">Room Name</string>
+
+    <string-array name="floor_numbers_labels">
+        <item>Floor 1</item>
+        <item>Floor 2</item>
+        <item>Floor 3</item>
+        <item>Floor 4</item>
+        <item>Floor 5</item>
+        <item>Floor 6</item>
+        <item>Floor 7</item>
+        <item>Floor 8</item>
+        <item>Floor 9</item>
+        <item>Floor 10</item>
+    </string-array>
+
 </resources>

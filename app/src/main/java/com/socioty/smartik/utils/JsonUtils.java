@@ -11,6 +11,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.socioty.smartik.model.DeviceMap;
+import com.socioty.smartik.model.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 
@@ -38,5 +43,15 @@ public final class JsonUtils {
     public static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(byte[].class,
             new ByteArrayToBase64TypeAdapter()).create();
 
+
+    public static DeviceMap extractDeviceMapFromResponse(final JSONObject response) {
+        try {
+            final DeviceMap deviceMap = GSON.fromJson(response.getJSONObject(RequestUtils.DEVICE_MAP_PROPERTY).toString(), DeviceMap.class);
+            Token.sToken.setDeviceMap(deviceMap);
+            return deviceMap;
+        } catch (final JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
