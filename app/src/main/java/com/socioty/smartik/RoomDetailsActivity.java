@@ -117,12 +117,13 @@ public class RoomDetailsActivity extends AppCompatActivity {
             final Bitmap bitMap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
             imageView.setImageBitmap(bitMap);
         }
-        imageView.setOnClickListener(new View.OnClickListener() {
+        imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onLongClick(View v) {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                return true;
             }
         });
     }
@@ -159,7 +160,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
                             recyclerView.setHasFixedSize(true);
                             final LinearLayoutManager mLayoutManager = new LinearLayoutManager(RoomDetailsActivity.this);
                             recyclerView.setLayoutManager(mLayoutManager);
-                            final DeviceListAdapter mAdapter = new DeviceListAdapter(devices, accessToken);
+                            final DeviceListAdapter mAdapter = new DeviceListAdapter(null, getSupportFragmentManager(), devices, accessToken);
                             recyclerView.setAdapter(mAdapter);
                         }
                     };
