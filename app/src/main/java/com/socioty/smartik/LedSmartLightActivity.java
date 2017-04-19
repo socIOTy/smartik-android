@@ -54,6 +54,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
     private int gColor = 0;
     private int bColor = 0;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +81,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(String.format(FirehoseWebSocketListenerService.DEVICE_MESSAGE_BROADCAST_ACTION_PATTERN, deviceId));
         registerReceiver(broadcastReceiver, intentFilter);
+
     }
 
     @Override
@@ -263,14 +265,12 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
                                 data = result.getData().get(0).getData().toString();
                             }
                             updateState(data);
-
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     initUI();
                                 }
                             });
-
                         }
 
                         @Override

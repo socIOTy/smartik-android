@@ -55,6 +55,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
     private UsersApi usersApi;
     private Room room;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,10 +171,12 @@ public class RoomDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
 
+
                 }
 
                 @Override
                 public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+
 
                 }
             });

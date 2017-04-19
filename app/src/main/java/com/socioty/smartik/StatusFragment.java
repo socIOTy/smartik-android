@@ -52,7 +52,8 @@ public class StatusFragment extends Fragment {
 
     private TextView greeting;
     private TextView devices;
-    private TextView currentTemp;
+    private CustomProgressDialog dialog;
+
     public static StatusFragment newInstance() {
         
         Bundle args = new Bundle();
@@ -67,6 +68,7 @@ public class StatusFragment extends Fragment {
         super.onCreate(savedInstanceState);
         initializeMessagesApi(Token.sToken.getToken());
         initStatusData();
+        dialog = new CustomProgressDialog(getContext());
     }
 
     @Override

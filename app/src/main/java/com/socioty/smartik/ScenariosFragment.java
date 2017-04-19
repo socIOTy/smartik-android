@@ -66,8 +66,9 @@ public class ScenariosFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             Bundle data = intent.getExtras();
             String message = data.getString("broadcastMessage");
-
-            Snackbar.make(getView(),message, Snackbar.LENGTH_SHORT).show();
+            if (getView() != null) {
+                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+            }
         }
     };
 

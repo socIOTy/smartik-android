@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     private UsersApi usersApi;
     private Token token;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -179,10 +181,12 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+
                 }
 
                 @Override
                 public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+
                 }
             });
 

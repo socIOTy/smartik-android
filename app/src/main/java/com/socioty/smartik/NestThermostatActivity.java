@@ -88,6 +88,7 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
     char currentDegree = 'C';
     double currentTemp = 20;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -260,6 +261,7 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
                                 @Override
                                 public void run() {
                                     initUI();
+
                                 }
                             });
 
@@ -267,10 +269,12 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
 
                         @Override
                         public void onUploadProgress(long bytes, long contentLen, boolean done) {
+
                         }
 
                         @Override
                         public void onDownloadProgress(long bytes, long contentLen, boolean done) {
+
                         }
                     });
         } catch (ApiException exc) {

@@ -100,6 +100,7 @@ public class DeviceListFragment extends Fragment {
 
     private void invokeListDevices() {
         try {
+
             usersApi.getUserDevicesAsync(userId, 0, 100, true, new ApiCallback<DevicesEnvelope>() {
 
                 @Override
@@ -208,6 +209,7 @@ public class DeviceListFragment extends Fragment {
 
     private void addDevice(String name, String dtid) {
         try {
+
             devicesApi.addDeviceAsync(new Device().name(name).uid(userId).dtid(dtid), new ApiCallback<DeviceEnvelope>() {
                 @Override
                 public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
@@ -244,12 +246,12 @@ public class DeviceListFragment extends Fragment {
 
                 @Override
                 public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-                    //NOTHING TO DO
+
                 }
 
                 @Override
                 public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
-                    //NOTHING TO DO
+
                 }
             });
         } catch (final ApiException e) {
