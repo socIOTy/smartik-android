@@ -17,6 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.socioty.smartik.model.Token;
+import com.socioty.smartik.utils.JsonUtils;
 import com.socioty.smartik.utils.RequestUtils;
 
 import org.json.JSONException;
@@ -48,6 +49,9 @@ public class DeviceListFragment extends Fragment {
     public static final String LED_SMART_LIGHT_DEVICE_TYPE_ID = "dt71c282d4fad94a69b22fa6d1e449fbbb";
     public static final String NEST_THERMOSTAT_DEVICE_TYPE_ID = "dt5247379d38fa4ac78e4723f8e92de681";
 
+    public static final String KEY_DEVICE_ID = "DEVICE_ID";
+    public static final String KEY_FLOOR_NUMBER = "FLOOR_NUMBER";
+    public static final String KEY_ROOM_NAME = "ROOM_NAME";
     public static final String KEY_DEVICE_NAME = "DEVICE_NAME";
     public static final String KEY_DEVICE_TYPE = "DEVICE_TYPE";
 
@@ -56,6 +60,7 @@ public class DeviceListFragment extends Fragment {
     private UsersApi usersApi;
     private DevicesApi devicesApi;
 
+    private ManageDeviceFragment manageDeviceFragment;
     private FloatingActionButton addDeviceBtn;
 
     private String userId;
@@ -81,15 +86,16 @@ public class DeviceListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.activity_list_device_types, container, false);
 
-        final ManageDeviceFragment searchDialog = ManageDeviceFragment.newInstance();
-        searchDialog.setTargetFragment(this, 0);
+        manageDeviceFragment = ManageDeviceFragment.newInstance();
+        manageDeviceFragment.setTargetFragment(this, 0);
 
         addDeviceBtn = (FloatingActionButton) v.findViewById(R.id.add_device_fab);
         addDeviceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fm = getChildFragmentManager();
-                searchDialog.show(fm, "BLA");
+                manageDeviceFragment.setArguments(new Bundle());
+                manageDeviceFragment.show(fm, "BLA");
             }
         });
 
@@ -137,7 +143,7 @@ public class DeviceListFragment extends Fragment {
 
 
                             // specify an adapter (see also next example)
-                            final DeviceListAdapter mAdapter = new DeviceListAdapter(devices, accessToken);
+                            final DeviceListAdapter mAdapter = new DeviceListAdapter(manageDeviceFragment, getChildFragmentManager(), devices, accessToken);
                             mRecyclerView.setAdapter(mAdapter);
                         }
                     };
@@ -187,27 +193,48 @@ public class DeviceListFragment extends Fragment {
             bundle.putString(FirehoseWebSocketListenerService.USER_ID_KEY, userId);
             bundle.putString(FirehoseWebSocketListenerService.DEVICE_IDS_KEY, deviceIds.toString());
             intent.putExtras(bundle);
-            getActivity().startService(intent) ;
+            getActivity().startService(intent);
         }
 
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == 10) {
-            String name = data.getExtras().getString(KEY_DEVICE_NAME);
-            int type = data.getExtras().getInt(KEY_DEVICE_TYPE);
-            String dtid = "";
-            if (type == 0) {
-                dtid = LED_SMART_LIGHT_DEVICE_TYPE_ID;
-            } else {
-                dtid = NEST_THERMOSTAT_DEVICE_TYPE_ID;
+        switch (resultCode) {
+            case 10: {
+                int floorNumber = data.getExtras().getInt(KEY_FLOOR_NUMBER);
+                String roomName = data.getExtras().getString(KEY_ROOM_NAME);
+                String name = data.getExtras().getString(KEY_DEVICE_NAME);
+                int type = data.getExtras().getInt(KEY_DEVICE_TYPE);
+                String dtid = "";
+                if (type == 0) {
+                    dtid = LED_SMART_LIGHT_DEVICE_TYPE_ID;
+                } else {
+                    dtid = NEST_THERMOSTAT_DEVICE_TYPE_ID;
+                }
+                addDevice(floorNumber, roomName, name, dtid);
+                break;
             }
-            addDevice(name,dtid);
+            case 20: {
+                String deviceId = data.getExtras().getString(KEY_DEVICE_ID);
+                int floorNumber = data.getExtras().getInt(KEY_FLOOR_NUMBER);
+                String roomName = data.getExtras().getString(KEY_ROOM_NAME);
+                String name = data.getExtras().getString(KEY_DEVICE_NAME);
+                updateDevice(deviceId, floorNumber, roomName, name);
+                break;
+            }
+            case 30: {
+                String deviceId = data.getExtras().getString(KEY_DEVICE_ID);
+                deleteDevice(deviceId);
+                break;
+            }
+            default: {
+                throw new IllegalArgumentException("Unknow resultCode");
+            }
         }
     }
 
-    private void addDevice(String name, String dtid) {
+    private void addDevice(final int floorNumber, final String roomName, String name, String dtid) {
         try {
 
             devicesApi.addDeviceAsync(new Device().name(name).uid(userId).dtid(dtid), new ApiCallback<DeviceEnvelope>() {
@@ -221,24 +248,25 @@ public class DeviceListFragment extends Fragment {
                 public void onSuccess(DeviceEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
                     final JSONObject object = new JSONObject();
                     try {
+
                         object.put("deviceId", result.getData().getId());
-                        object.put("floorNumber", 0);
-                        object.put("roomName", "Living room");
+                        object.put("floorNumber", floorNumber);
+                        object.put("roomName", roomName);
 
                         final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
                                 (Request.Method.POST, RequestUtils.BACKEND_DEVICE_RESOURCE, object, new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(final JSONObject response) {
-                                        System.out.println("Response: " + response);
+                                        JsonUtils.extractDeviceMapFromResponse(response);
+                                        invokeListDevices();
                                     }
                                 }, new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(final VolleyError error) {
-                                        // TODO Auto-generated method stub
+                                        throw new RuntimeException(error);
                                     }
                                 });
                         RequestUtils.addRequest(jsObjRequest);
-                        invokeListDevices();
                     } catch (final JSONException e) {
                         e.printStackTrace();
                     }
@@ -252,6 +280,100 @@ public class DeviceListFragment extends Fragment {
                 @Override
                 public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
 
+                }
+            });
+        } catch (final ApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateDevice(final String deviceId, final int floorNumber, final String roomName, String name) {
+        try {
+            devicesApi.updateDeviceAsync(deviceId, new Device().name(name).uid(userId),  new ApiCallback<DeviceEnvelope>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    //TODO: TREAT!!
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onSuccess(DeviceEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    try {
+                        final JSONObject object = new JSONObject();
+                        object.put("deviceId", deviceId);
+                        object.put("floorNumber", floorNumber);
+                        object.put("roomName", roomName);
+
+                        final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
+                                (Request.Method.POST, RequestUtils.BACKEND_DEVICE_RESOURCE, object, new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(final JSONObject response) {
+                                        JsonUtils.extractDeviceMapFromResponse(response);
+                                        invokeListDevices();
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(final VolleyError error) {
+                                        throw new RuntimeException(error);
+                                    }
+                                });
+                        RequestUtils.addRequest(jsObjRequest);
+                    } catch (final JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+                    //NOTHING TO DO
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+                    //NOTHING TO DO
+                }
+            });
+        } catch (final ApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteDevice(final String deviceId) {
+        try {
+            devicesApi.deleteDeviceAsync(deviceId, new ApiCallback<DeviceEnvelope>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    //TODO: TREAT!!
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onSuccess(DeviceEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
+                            (Request.Method.DELETE, String.format(RequestUtils.BACKEND_DEVICE_RESOURCE_ID_PATTERN, deviceId), null, new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(final JSONObject response) {
+                                    JsonUtils.extractDeviceMapFromResponse(response);
+                                    invokeListDevices();
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(final VolleyError error) {
+                                    throw new RuntimeException(error);
+                                }
+                            });
+                    RequestUtils.addRequest(jsObjRequest);
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+                    //NOTHING TO DO
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+                    //NOTHING TO DO
                 }
             });
         } catch (final ApiException e) {

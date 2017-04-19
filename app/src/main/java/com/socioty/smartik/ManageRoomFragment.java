@@ -27,7 +27,6 @@ public class ManageRoomFragment extends DialogFragment {
     private Integer floorNumber;
 
     public static ManageRoomFragment newInstance() {
-
         Bundle args = new Bundle();
 
         ManageRoomFragment fragment = new ManageRoomFragment();
