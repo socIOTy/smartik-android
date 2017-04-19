@@ -7,6 +7,7 @@ import java.util.Set;
 public class Room {
 
 	private String name;
+	private byte[] imageBytes;
 	private Set<String> deviceIds;
 
 	protected Room() {
@@ -19,6 +20,10 @@ public class Room {
 
 	public String getName() {
 		return name;
+	}
+
+	public byte[] getImageBytes() {
+		return imageBytes;
 	}
 
 	public Set<String> getDeviceIds() {
@@ -38,6 +43,7 @@ public class Room {
 		final StringBuilder builder = new StringBuilder();
 		return builder
 				.append("name: ").append(name).append(", ")
+				.append("imageBytes: ").append(imageBytes == null ? null : imageBytes.length).append(", ")
 				.append("deviceIds: ").append(deviceIds).append(", ").toString();
 	}
 }

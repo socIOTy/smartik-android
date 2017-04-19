@@ -13,12 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.socioty.smartik.model.Token;
+import com.socioty.smartik.utils.RequestUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -224,8 +223,8 @@ public class DeviceListFragment extends Fragment {
                         object.put("floorNumber", 0);
                         object.put("roomName", "Living room");
 
-                        final JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                                (Request.Method.POST, "https://smartik.herokuapp.com/rest/device", object, new Response.Listener<JSONObject>() {
+                        final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
+                                (Request.Method.POST, RequestUtils.BACKEND_DEVICE_RESOURCE, object, new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(final JSONObject response) {
                                         System.out.println("Response: " + response);

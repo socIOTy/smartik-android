@@ -1,7 +1,7 @@
 package com.socioty.smartik;
 
-import android.content.Intent;
-import android.os.Bundle;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.socioty.smartik.model.DeviceMap;
-import com.socioty.smartik.model.Floor;
 import com.socioty.smartik.model.Room;
-import com.socioty.smartik.model.Scenario;
 
 import java.util.List;
 
@@ -30,8 +27,8 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.ViewHo
         public ImageView mImage;
         public ViewHolder(View view) {
             super(view);
-            mTextView = (TextView) view.findViewById(R.id.scenario_name);
-            mImage = (ImageView) view.findViewById(R.id.scenario_image);
+            mTextView = (TextView) view.findViewById(R.id.room_name);
+            mImage = (ImageView) view.findViewById(R.id.room_image);
         }
     }
 
@@ -42,7 +39,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.ViewHo
     @Override
     public RoomListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.scenario_adapter, parent, false);
+                .inflate(R.layout.room_adapter, parent, false);
         ViewHolder vh = new ViewHolder(view);
         return vh;
     }
@@ -54,8 +51,14 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-
-        holder.mTextView.setText(rooms.get(position).getName());
+        final Room room = rooms.get(position);
+        final byte[] imageBytes = room.getImageBytes();
+        if (imageBytes != null) {
+            final Bitmap bitMap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+            holder.mImage.setImageBitmap(bitMap);
+            System.out.println(holder.mImage.getAlpha() + "  " + holder.mImage.getImageAlpha());
+        }
+        holder.mTextView.setText(room.getName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

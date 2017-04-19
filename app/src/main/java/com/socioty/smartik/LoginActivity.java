@@ -14,9 +14,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.gson.Gson;
 import com.socioty.smartik.model.DeviceMap;
 import com.socioty.smartik.model.Token;
+import com.socioty.smartik.utils.JsonUtils;
+import com.socioty.smartik.utils.RequestUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -154,12 +155,12 @@ public class LoginActivity extends AppCompatActivity {
                     token.setUserId(getApplicationContext(), result.getData().getId());
                     final String email = result.getData().getEmail();
                     token.setEmail(email);
-                    final JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                            (Request.Method.GET, "https://smartik.herokuapp.com/rest/account/" + email, null, new Response.Listener<JSONObject>() {
+                    final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
+                            (Request.Method.GET, String.format(RequestUtils.BACKEND_ACCOUNT_BY_MAIL_RESOURCE_PATTERN, email), null, new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(final JSONObject response) {
                                     try {
-                                        final DeviceMap deviceMap = new Gson().fromJson(response.getJSONObject("deviceMap").toString(), DeviceMap.class);
+                                        final DeviceMap deviceMap = JsonUtils.GSON.fromJson(response.getJSONObject(RequestUtils.DEVICE_MAP_PROPERTY).toString(), DeviceMap.class);
                                         token.setDeviceMap(deviceMap);
                                     } catch (JSONException e) {
                                         throw new RuntimeException(e);
