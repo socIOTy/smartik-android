@@ -42,7 +42,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:background="@android:color/transparent"
-                    card_view:srcCompat="@android:drawable/ic_menu_edit" />
+                    card_view:srcCompat="@android:drawable/ic_menu_edit"
+                    android:visibility="gone"/>
             </RelativeLayout>
         </LinearLayout>
 
