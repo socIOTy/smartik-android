@@ -41,6 +41,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
 
     private final DeviceMessageBroadcastReceiver broadcastReceiver = new DeviceMessageBroadcastReceiver(this);
 
+    private CustomProgressDialog progressDialog;
     private String deviceId;
 
     private MessagesApi messagesApi;
@@ -60,6 +61,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.led_smart_light_main);
 
+        progressDialog = new CustomProgressDialog(this);
         initializeMessagesApi(Token.sToken.getToken());
         this.deviceId = getIntent().getStringExtra(KEY_DEVICE_ID);
         imageButton = (ImageButton) findViewById(R.id.switcher);
@@ -198,6 +200,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
     }
 
     private void commonSendAction(final ActionArray actionArray) {
+        progressDialog.show();
         final Actions actions = new Actions(); // Actions | Actions that are passed in the body
         actions.setDdid(deviceId);
 
@@ -216,6 +219,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
                 public void onSuccess(MessageIDEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
                     broadcastReceiver.ignoreNext();
                     System.out.println(result);
+                    progressDialog.dismiss();
                 }
 
                 @Override
@@ -245,6 +249,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
     }
 
     private void getLatestMsg() {
+        progressDialog.show();
         final String tag = "Bulb getLastNormalizedMessagesAsync";
         try {
             int messageCount = 1;
@@ -321,6 +326,7 @@ public class LedSmartLightActivity extends AppCompatActivity implements colorDia
         configureColorButton();
         configureIntensityPicker();
         enableComponentsBasedOnState(isOn);
+        progressDialog.dismiss();
     }
 
     @Override

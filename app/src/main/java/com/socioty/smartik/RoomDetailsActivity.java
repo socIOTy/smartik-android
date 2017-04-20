@@ -59,10 +59,14 @@ public class RoomDetailsActivity extends AppCompatActivity {
 
     private ManageDeviceFragment manageDeviceFragment;
 
+    private CustomProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_details);
+
+        progressDialog = new CustomProgressDialog(this);
 
         final String accessToken = Token.getToken();
         final String userId = Token.sToken.getUserId();
@@ -152,6 +156,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
     }
 
     private void initializeDeviceList(final String accessToken, final String userId, final Room room) {
+        progressDialog.show();
         try {
             usersApi.getUserDevicesAsync(userId, 0, 100, true, new ApiCallback<DevicesEnvelope>() {
 
@@ -185,6 +190,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
                             recyclerView.setLayoutManager(mLayoutManager);
                             final DeviceListAdapter mAdapter = new DeviceListAdapter(devices, accessToken);
                             recyclerView.setAdapter(mAdapter);
+                            progressDialog.dismiss();
                         }
                     };
                     mainHandler.post(myRunnable);
@@ -213,6 +219,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
 
+        progressDialog.show();
         switch(requestCode) {
             case SELECT_PHOTO:
                 if(resultCode == RESULT_OK){
@@ -233,6 +240,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
 
                                             final ImageView imageView = (ImageView) findViewById(R.id.room_image);
                                             imageView.setImageBitmap(selectedImage);
+                                            progressDialog.dismiss();
                                         }
                                     }, new Response.ErrorListener() {
                                         @Override

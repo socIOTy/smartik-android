@@ -51,10 +51,13 @@ public class RoomsFragment extends Fragment {
     private ManageRoomFragment manageRoomFragment;
     private boolean invalidated = false;
 
+    private CustomProgressDialog progressDialog;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_rooms, container, false);
 
+        progressDialog = new CustomProgressDialog(getContext());
         this.manageRoomFragment = ManageRoomFragment.newInstance();
         manageRoomFragment.setTargetFragment(this, 0);
 
@@ -85,6 +88,7 @@ public class RoomsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        progressDialog.show();
         final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
                 (Request.Method.GET, String.format(RequestUtils.BACKEND_ACCOUNT_BY_MAIL_RESOURCE_PATTERN, Token.sToken.getEmail()), null, new Response.Listener<JSONObject>() {
                     @Override
@@ -123,6 +127,7 @@ public class RoomsFragment extends Fragment {
         });
         RoomsFragment.this.recyclerView.setLayoutManager(gridLayoutManager);
         RoomsFragment.this.recyclerView.setAdapter(sectionAdapter);
+        progressDialog.dismiss();
     }
 
     @Override
@@ -136,6 +141,7 @@ public class RoomsFragment extends Fragment {
     }
 
     private void addRoom(final int floorNumber, final String name) {
+        progressDialog.show();
         final DeviceMap deviceMap = Token.sToken.getDeviceMap();
         deviceMap.addRoom(floorNumber, name);
         try {

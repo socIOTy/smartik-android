@@ -44,11 +44,14 @@ public class LoginActivity extends AppCompatActivity {
     private UsersApi usersApi;
     private Token token;
 
+    private CustomProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        dialog = new CustomProgressDialog(this);
 
         mWebView = (WebView) findViewById(R.id.webview);
         mWebView.setVisibility(View.GONE);
@@ -137,6 +140,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void loadToken(final String accessToken) {
+        dialog.show();
         initializeApi(accessToken);
         getUser();
     }
@@ -164,6 +168,7 @@ public class LoginActivity extends AppCompatActivity {
                                         final DeviceMap deviceMap = JsonUtils.GSON.fromJson(response.getJSONObject(RequestUtils.DEVICE_MAP_PROPERTY).toString(), DeviceMap.class);
                                         token.setDeviceMap(deviceMap);
                                         startMessageActivity();
+                                        dialog.dismiss();
                                     } catch (JSONException e) {
                                         throw new RuntimeException(e);
                                     }

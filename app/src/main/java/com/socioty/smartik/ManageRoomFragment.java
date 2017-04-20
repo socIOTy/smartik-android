@@ -27,6 +27,8 @@ public class ManageRoomFragment extends DialogFragment {
     private Spinner floorNumbers;
     private Integer floorNumber;
 
+    private Dialog dialog;
+
     public static ManageRoomFragment newInstance() {
         Bundle args = new Bundle();
 
@@ -51,16 +53,11 @@ public class ManageRoomFragment extends DialogFragment {
             floorNumber = null;
         }
 
-        return new AlertDialog.Builder(getActivity()).setView(v)
+        dialog = new AlertDialog.Builder(getActivity()).setView(v)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (validateRoomName(roomName.getText().toString())) {
-                            sendResult(10);
-                        } else {
-                            System.out.println("Room exists");
-                            Snackbar.make(v, R.string.room_name_must_be_unique, Snackbar.LENGTH_LONG).show();
-                        }
+                       //nothing to do
                     }
                 }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
@@ -68,6 +65,28 @@ public class ManageRoomFragment extends DialogFragment {
                         dialog.dismiss();
                     }
                 }).create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                final AlertDialog mDialog = (AlertDialog) dialog;
+
+                mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if (validateRoomName(roomName.getText().toString())) {
+                            sendResult(10);
+                            dialog.dismiss();
+                        } else {
+                            System.out.println("Room exists");
+                            Snackbar.make(v, R.string.room_name_must_be_unique, Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        });
+        return dialog;
     }
 
     private boolean validateRoomName(final String name) {
@@ -86,4 +105,8 @@ public class ManageRoomFragment extends DialogFragment {
         getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode, intent);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 }

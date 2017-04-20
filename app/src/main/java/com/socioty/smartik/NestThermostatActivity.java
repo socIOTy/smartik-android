@@ -82,6 +82,8 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
 
     private String deviceId;
 
+    private CustomProgressDialog progressDialog;
+
     private MessagesApi messagesApi;
 
     private int state = 2;
@@ -94,6 +96,7 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nest_thermostat);
 
+        progressDialog = new CustomProgressDialog(this);
         stateSpinner = (Spinner) findViewById(R.id.state_spinner);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -235,6 +238,7 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
     }
 
     private void getLatestMsg() {
+        progressDialog.show();
         final String tag = "Thermostat getLastNormalizedMessagesAsync";
         try {
             int messageCount = 1;
@@ -376,6 +380,7 @@ public class NestThermostatActivity extends AppCompatActivity implements DeviceM
         });
 
         configureTemp();
+        progressDialog.dismiss();
     }
 
     @Override

@@ -63,6 +63,8 @@ public class DeviceListFragment extends Fragment {
     private ManageDeviceFragment manageDeviceFragment;
     private FloatingActionButton addDeviceBtn;
 
+    private CustomProgressDialog progressDialog;
+
     private String userId;
 
     public static DeviceListFragment newInstance() {
@@ -77,6 +79,7 @@ public class DeviceListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        progressDialog = new CustomProgressDialog(getContext());
         accessToken = Token.sToken.getToken();
         userId = Token.sToken.getUserId();
         initializeDevicesApi(accessToken);
@@ -106,7 +109,7 @@ public class DeviceListFragment extends Fragment {
 
     private void invokeListDevices() {
         try {
-
+            progressDialog.show();
             usersApi.getUserDevicesAsync(userId, 0, 100, true, new ApiCallback<DevicesEnvelope>() {
 
                 @Override
@@ -145,6 +148,7 @@ public class DeviceListFragment extends Fragment {
                             // specify an adapter (see also next example)
                             final DeviceListAdapter mAdapter = new DeviceListAdapter(manageDeviceFragment, getChildFragmentManager(), devices, accessToken);
                             mRecyclerView.setAdapter(mAdapter);
+                            progressDialog.dismiss();
                         }
                     };
                     mainHandler.post(myRunnable);
