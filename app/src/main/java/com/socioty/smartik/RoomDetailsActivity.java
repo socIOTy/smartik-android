@@ -1,11 +1,13 @@
 package com.socioty.smartik;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -55,6 +57,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
     private UsersApi usersApi;
     private Room room;
 
+    private ManageDeviceFragment manageDeviceFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +67,10 @@ public class RoomDetailsActivity extends AppCompatActivity {
         final String accessToken = Token.getToken();
         final String userId = Token.sToken.getUserId();
 
+
         initializeApi(accessToken);
         this.room = Token.sToken.getDeviceMap().getRoom(getIntent().getExtras().getString("roomName"));
+
 
         initializeDeleteButton();
         initializeImage(room);
@@ -77,26 +82,43 @@ public class RoomDetailsActivity extends AppCompatActivity {
         deleteRoomBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final DeviceMap deviceMap = Token.sToken.getDeviceMap();
-                deviceMap.removeRoom(room);
-                try {
-                    final String deviceMapJsonString = JsonUtils.GSON.toJson(Token.sToken.getDeviceMap());
-                    final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
-                            (Request.Method.POST, RequestUtils.BACKEND_DEVICE_MAP_RESOURCE, new JSONObject(deviceMapJsonString), new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(final JSONObject response) {
-                                    RoomDetailsActivity.this.finish();
-                                }
-                            }, new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(final VolleyError error) {
-                                    throw new RuntimeException(error);
-                                }
-                            });
-                    RequestUtils.addRequest(jsObjRequest);
-                } catch (final JSONException e) {
-                    throw new RuntimeException(e);
+                if (room.getDeviceIds().isEmpty()) {
+                    new AlertDialog.Builder(RoomDetailsActivity.this).setTitle(R.string.delete_room_title)
+                            .setMessage(R.string.delete_room_message)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    final DeviceMap deviceMap = Token.sToken.getDeviceMap();
+                                    deviceMap.removeRoom(room);
+                                    try {
+                                        final String deviceMapJsonString = JsonUtils.GSON.toJson(Token.sToken.getDeviceMap());
+                                        final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
+                                                (Request.Method.POST, RequestUtils.BACKEND_DEVICE_MAP_RESOURCE, new JSONObject(deviceMapJsonString), new Response.Listener<JSONObject>() {
+                                                    @Override
+                                                    public void onResponse(final JSONObject response) {
+                                                        RoomDetailsActivity.this.finish();
+                                                    }
+                                                }, new Response.ErrorListener() {
+                                                    @Override
+                                                    public void onErrorResponse(final VolleyError error) {
+                                                        throw new RuntimeException(error);
+                                                    }
+                                                });
+                                        RequestUtils.addRequest(jsObjRequest);
+                                    } catch (final JSONException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }})
+                            .setNegativeButton(android.R.string.no, null).show();
+                } else {
+                    new AlertDialog.Builder(RoomDetailsActivity.this).setTitle(R.string.delete_room_title)
+                            .setMessage(R.string.cannot_delete_room_with_devices)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    //Nothing to do
+                                }}).show();
+
                 }
+
             }
         });
     }
@@ -161,7 +183,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
                             recyclerView.setHasFixedSize(true);
                             final LinearLayoutManager mLayoutManager = new LinearLayoutManager(RoomDetailsActivity.this);
                             recyclerView.setLayoutManager(mLayoutManager);
-                            final DeviceListAdapter mAdapter = new DeviceListAdapter(null, getSupportFragmentManager(), devices, accessToken);
+                            final DeviceListAdapter mAdapter = new DeviceListAdapter(devices, accessToken);
                             recyclerView.setAdapter(mAdapter);
                         }
                     };

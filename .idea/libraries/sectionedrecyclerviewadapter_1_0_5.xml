@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="sectionedrecyclerviewadapter-1.0.5">
     <CLASSES>
-      <root url="file://$USER_HOME$/.android/build-cache/ed3b2773d860a208b4b30a8675f0ace1659c7ca8/output/res" />
-      <root url="jar://$USER_HOME$/.android/build-cache/ed3b2773d860a208b4b30a8675f0ace1659c7ca8/output/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.android/build-cache/402b3285a22421aab4200351b2e462a47ebe08bb/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/402b3285a22421aab4200351b2e462a47ebe08bb/output/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

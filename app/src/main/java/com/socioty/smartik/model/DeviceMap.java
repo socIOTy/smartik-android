@@ -41,7 +41,7 @@ public class DeviceMap {
     public Room getRoom(final String name) {
         for (final Floor floor : floors) {
             for (final Room room : floor.getRooms()) {
-                if (room.getName().equals(name)) {
+                if (room.getName().equalsIgnoreCase(name)) {
                     return room;
                 }
             }

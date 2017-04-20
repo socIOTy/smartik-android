@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +37,7 @@ public class ManageRoomFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View v = LayoutInflater.from(getContext()).inflate(R.layout.fragment_room_dialog, null);
+        final View v = LayoutInflater.from(getContext()).inflate(R.layout.fragment_room_dialog, null);
 
         roomName = (EditText) v.findViewById(R.id.new_room_name);
         floorNumbers = (Spinner) v.findViewById(R.id.floor_number_spinner);
@@ -54,7 +55,12 @@ public class ManageRoomFragment extends DialogFragment {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        sendResult(10);
+                        if (validateRoomName(roomName.getText().toString())) {
+                            sendResult(10);
+                        } else {
+                            System.out.println("Room exists");
+                            Snackbar.make(v, R.string.room_name_must_be_unique, Snackbar.LENGTH_LONG).show();
+                        }
                     }
                 }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
@@ -62,6 +68,10 @@ public class ManageRoomFragment extends DialogFragment {
                         dialog.dismiss();
                     }
                 }).create();
+    }
+
+    private boolean validateRoomName(final String name) {
+        return Token.sToken.getDeviceMap().getRoom(name) == null;
     }
 
     private void sendResult(int resultCode) {

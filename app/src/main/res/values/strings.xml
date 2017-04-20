@@ -58,4 +58,9 @@
         <item>Floor 10</item>
     </string-array>
 
+    <string name="room_name_must_be_unique">There is already a room with this name.</string>
+    <string name="delete_room_title">Delete Room</string>
+    <string name="delete_room_message">Are you sure you want to delete this room?</string>
+    <string name="cannot_delete_room_with_devices">You can not remove this room because there are devices linked to it.</string>
+
 </resources>

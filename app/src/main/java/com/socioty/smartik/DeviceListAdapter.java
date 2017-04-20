@@ -41,6 +41,10 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
         }
     }
 
+    public DeviceListAdapter(final List<Device> devices, final String accessToken) {
+        this(null, null, devices, accessToken);
+    }
+
     // Provide a suitable constructor (depends on the kind of dataset)
     public DeviceListAdapter(final ManageDeviceFragment manageDeviceFragment, final FragmentManager fragmentManager, final List<Device> devices, final String accessToken) {
         final List<DeviceAdapter> adapters = new ArrayList<>(devices.size());
@@ -97,20 +101,24 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
 
             }
         });
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                final Bundle bundle = new Bundle();
-                bundle.putBoolean(ManageDeviceFragment.KEY_EDITION_MODE, true);
-                bundle.putString(ManageDeviceFragment.KEY_DEVICE_ID, devices.get(position).getDevice().getId());
-                bundle.putInt(ManageDeviceFragment.KEY_FLOOR_NUMBER, devices.get(position).getFloorNumber());
-                bundle.putString(ManageDeviceFragment.KEY_ROOM_NAME, devices.get(position).getRoom().getName());
-                bundle.putString(ManageDeviceFragment.KEY_DEVICE_NAME, devices.get(position).getDevice().getName());
-                manageDeviceFragment.setArguments(bundle);
-                manageDeviceFragment.show(fragmentManager, "BLA");
-                return true;
-            }
-        });
+
+        if (manageDeviceFragment != null) {
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    final Bundle bundle = new Bundle();
+                    bundle.putBoolean(ManageDeviceFragment.KEY_EDITION_MODE, true);
+                    bundle.putString(ManageDeviceFragment.KEY_DEVICE_ID, devices.get(position).getDevice().getId());
+                    bundle.putInt(ManageDeviceFragment.KEY_FLOOR_NUMBER, devices.get(position).getFloorNumber());
+                    bundle.putString(ManageDeviceFragment.KEY_ROOM_NAME, devices.get(position).getRoom().getName());
+                    bundle.putString(ManageDeviceFragment.KEY_DEVICE_NAME, devices.get(position).getDevice().getName());
+                    manageDeviceFragment.setArguments(bundle);
+                    manageDeviceFragment.show(fragmentManager, "BLA");
+                    return true;
+                }
+            });
+        }
+
 
     }
 

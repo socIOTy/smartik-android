@@ -3,6 +3,7 @@ package com.socioty.smartik;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -130,6 +131,7 @@ public class RoomsFragment extends Fragment {
             int floorNumber = data.getExtras().getInt(KEY_FLOOR_NUMBER);
             String name = data.getExtras().getString(KEY_ROOM_NAME);
             addRoom(floorNumber, name);
+
         }
     }
 
