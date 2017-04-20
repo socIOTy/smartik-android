@@ -24,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.socioty.smartik.model.DeviceMap;
+import com.socioty.smartik.model.Floor;
 import com.socioty.smartik.model.Room;
 import com.socioty.smartik.model.Token;
 import com.socioty.smartik.utils.JsonUtils;
@@ -55,6 +56,7 @@ import cloud.artik.model.Device;
 import cloud.artik.model.DeviceEnvelope;
 import cloud.artik.model.DevicesEnvelope;
 
+import static com.socioty.smartik.R.id.floor_spinner;
 import static com.socioty.smartik.R.id.imageView;
 
 public class RoomDetailsActivity extends AppCompatActivity implements ManageDeviceFragment.ManageDeviceFragmentListener {
@@ -91,7 +93,21 @@ public class RoomDetailsActivity extends AppCompatActivity implements ManageDevi
             @Override
             public void onClick(View v) {
                 FragmentManager fm = getSupportFragmentManager();
-                manageDeviceFragment.setArguments(new Bundle());
+                final Bundle bundle = new Bundle();
+
+                final List<Floor> floors = Token.sToken.getDeviceMap().getFloors();
+                int floorNumber = -1;
+                for (int k = 0; k < floors.size(); k++) {
+                    final Floor floor = floors.get(k);
+                    if (floor.getRooms().contains(room)) {
+                        floorNumber = k;
+                        break;
+
+                    }
+                }
+                bundle.putInt(ManageDeviceFragment.KEY_FLOOR_NUMBER, floorNumber);
+                bundle.putString(ManageDeviceFragment.KEY_ROOM_NAME, room.getName());
+                manageDeviceFragment.setArguments(bundle);
                 manageDeviceFragment.show(fm, "BLA");
             }
         });

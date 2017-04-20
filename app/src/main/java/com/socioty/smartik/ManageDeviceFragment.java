@@ -138,6 +138,24 @@ public class ManageDeviceFragment extends DialogFragment {
             deviceTypes.setEnabled(true);
         }
 
+        if (listener != null) {
+            final int floorNumber = bundle.getInt(KEY_FLOOR_NUMBER);
+            final String roomName = bundle.getString(KEY_ROOM_NAME);
+            floorSpinner.setSelection(floorNumber);
+
+            final List<Room> roomsList = ((Floor)this.floorSpinner.getSelectedItem()).getRoomsList();
+            for (int k = 0; k < roomsList.size(); k++) {
+                if (roomsList.get(k).getName().equals(roomName)) {
+                    this.roomSpinner.setSelection(k);
+                    break;
+
+                }
+            }
+
+            floorSpinner.setEnabled(false);
+            roomSpinner.setEnabled(false);
+        }
+
         return new AlertDialog.Builder(getActivity()).setView(v)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
