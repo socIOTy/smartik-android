@@ -7,6 +7,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import cloud.artik.api.DevicesApi;
 import cloud.artik.api.UsersApi;
 import cloud.artik.client.ApiCallback;
 import cloud.artik.client.ApiClient;
@@ -49,17 +52,21 @@ import cloud.artik.client.ApiException;
 import cloud.artik.client.Configuration;
 import cloud.artik.client.auth.OAuth;
 import cloud.artik.model.Device;
+import cloud.artik.model.DeviceEnvelope;
 import cloud.artik.model.DevicesEnvelope;
 
 import static com.socioty.smartik.R.id.imageView;
 
-public class RoomDetailsActivity extends AppCompatActivity {
+public class RoomDetailsActivity extends AppCompatActivity implements ManageDeviceFragment.ManageDeviceFragmentListener {
 
     private final int SELECT_PHOTO = 1;
 
+    private DevicesApi devicesApi;
     private UsersApi usersApi;
     private Room room;
 
+    private String userId;
+    private String accessToken;
     private ManageDeviceFragment manageDeviceFragment;
 
     private CustomProgressDialog progressDialog;
@@ -71,13 +78,23 @@ public class RoomDetailsActivity extends AppCompatActivity {
 
         progressDialog = new CustomProgressDialog(this);
 
-        final String accessToken = Token.getToken();
-        final String userId = Token.sToken.getUserId();
-
+        accessToken = Token.getToken();
+        userId = Token.sToken.getUserId();
+        manageDeviceFragment = new ManageDeviceFragment();
+        manageDeviceFragment.setListener(this);
 
         initializeApi(accessToken);
         this.room = Token.sToken.getDeviceMap().getRoom(getIntent().getExtras().getString("roomName"));
 
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_device_fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getSupportFragmentManager();
+                manageDeviceFragment.setArguments(new Bundle());
+                manageDeviceFragment.show(fm, "BLA");
+            }
+        });
 
         initializeTextName(room);
         initializeDeleteButton();
@@ -144,6 +161,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
         artikcloud_oauth.setAccessToken(accessToken);
 
         usersApi = new UsersApi(mApiClient);
+        devicesApi = new DevicesApi(mApiClient);
     }
 
     private void initializeImage(Room room) {
@@ -197,7 +215,7 @@ public class RoomDetailsActivity extends AppCompatActivity {
                             recyclerView.setHasFixedSize(true);
                             final LinearLayoutManager mLayoutManager = new LinearLayoutManager(RoomDetailsActivity.this);
                             recyclerView.setLayoutManager(mLayoutManager);
-                            final DeviceListAdapter mAdapter = new DeviceListAdapter(devices, accessToken);
+                            final DeviceListAdapter mAdapter = new DeviceListAdapter(manageDeviceFragment, getSupportFragmentManager(), devices, accessToken);
                             recyclerView.setAdapter(mAdapter);
                             progressDialog.dismiss();
                         }
@@ -288,5 +306,187 @@ public class RoomDetailsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onResult(int resultCode, Intent intent) {
+        switch (resultCode) {
+            case 10: {
+                int floorNumber = intent.getExtras().getInt(DeviceListFragment.KEY_FLOOR_NUMBER);
+                String roomName = intent.getExtras().getString(DeviceListFragment.KEY_ROOM_NAME);
+                String name = intent.getExtras().getString(DeviceListFragment.KEY_DEVICE_NAME);
+                int type = intent.getExtras().getInt(DeviceListFragment.KEY_DEVICE_TYPE);
+                String dtid = "";
+                if (type == 0) {
+                    dtid = DeviceListFragment.LED_SMART_LIGHT_DEVICE_TYPE_ID;
+                } else {
+                    dtid = DeviceListFragment.NEST_THERMOSTAT_DEVICE_TYPE_ID;
+                }
+                addDevice(floorNumber, roomName, name, dtid);
+                break;
+            }
+            case 20: {
+                String deviceId = intent.getExtras().getString(DeviceListFragment.KEY_DEVICE_ID);
+                int floorNumber = intent.getExtras().getInt(DeviceListFragment.KEY_FLOOR_NUMBER);
+                String roomName = intent.getExtras().getString(DeviceListFragment.KEY_ROOM_NAME);
+                String name = intent.getExtras().getString(DeviceListFragment.KEY_DEVICE_NAME);
+                updateDevice(deviceId, floorNumber, roomName, name);
+                break;
+            }
+            case 30: {
+                String deviceId = intent.getExtras().getString(DeviceListFragment.KEY_DEVICE_ID);
+                deleteDevice(deviceId);
+                break;
+            }
+            default: {
+                throw new IllegalArgumentException("Unknow resultCode");
+            }
+        }
+    }
 
+    private void addDevice(final int floorNumber, final String roomName, String name, String dtid) {
+        try {
+
+            devicesApi.addDeviceAsync(new Device().name(name).uid(userId).dtid(dtid), new ApiCallback<DeviceEnvelope>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    //TODO: TREAT!!
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onSuccess(DeviceEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    final JSONObject object = new JSONObject();
+                    try {
+
+                        object.put("deviceId", result.getData().getId());
+                        object.put("floorNumber", floorNumber);
+                        object.put("roomName", roomName);
+
+                        final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
+                                (Request.Method.POST, RequestUtils.BACKEND_DEVICE_RESOURCE, object, new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(final JSONObject response) {
+                                        JsonUtils.extractDeviceMapFromResponse(response);
+                                        initializeDeviceList(accessToken, userId, room);
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(final VolleyError error) {
+                                        throw new RuntimeException(error);
+                                    }
+                                });
+                        RequestUtils.addRequest(jsObjRequest);
+                    } catch (final JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+
+                }
+            });
+        } catch (final ApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateDevice(final String deviceId, final int floorNumber, final String roomName, String name) {
+        try {
+            devicesApi.updateDeviceAsync(deviceId, new Device().name(name).uid(userId),  new ApiCallback<DeviceEnvelope>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    //TODO: TREAT!!
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onSuccess(DeviceEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    try {
+                        final JSONObject object = new JSONObject();
+                        object.put("deviceId", deviceId);
+                        object.put("floorNumber", floorNumber);
+                        object.put("roomName", roomName);
+
+                        final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
+                                (Request.Method.POST, RequestUtils.BACKEND_DEVICE_RESOURCE, object, new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(final JSONObject response) {
+                                        JsonUtils.extractDeviceMapFromResponse(response);
+                                        initializeDeviceList(accessToken, userId, room);
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(final VolleyError error) {
+                                        throw new RuntimeException(error);
+                                    }
+                                });
+                        RequestUtils.addRequest(jsObjRequest);
+                    } catch (final JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+                    //NOTHING TO DO
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+                    //NOTHING TO DO
+                }
+            });
+        } catch (final ApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteDevice(final String deviceId) {
+        try {
+            devicesApi.deleteDeviceAsync(deviceId, new ApiCallback<DeviceEnvelope>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    //TODO: TREAT!!
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onSuccess(DeviceEnvelope result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    final JsonObjectRequest jsObjRequest = new RequestUtils.BaseJsonRequest
+                            (Request.Method.DELETE, String.format(RequestUtils.BACKEND_DEVICE_RESOURCE_ID_PATTERN, deviceId), null, new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(final JSONObject response) {
+                                    JsonUtils.extractDeviceMapFromResponse(response);
+                                    initializeDeviceList(accessToken, userId, room);
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(final VolleyError error) {
+                                    throw new RuntimeException(error);
+                                }
+                            });
+                    RequestUtils.addRequest(jsObjRequest);
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+                    //NOTHING TO DO
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+                    //NOTHING TO DO
+                }
+            });
+        } catch (final ApiException e) {
+            e.printStackTrace();
+        }
+    }
 }
+

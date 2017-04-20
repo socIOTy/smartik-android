@@ -41,10 +41,6 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.Vi
         }
     }
 
-    public DeviceListAdapter(final List<Device> devices, final String accessToken) {
-        this(null, null, devices, accessToken);
-    }
-
     // Provide a suitable constructor (depends on the kind of dataset)
     public DeviceListAdapter(final ManageDeviceFragment manageDeviceFragment, final FragmentManager fragmentManager, final List<Device> devices, final String accessToken) {
         final List<DeviceAdapter> adapters = new ArrayList<>(devices.size());

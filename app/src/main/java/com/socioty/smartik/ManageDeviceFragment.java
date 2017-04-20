@@ -28,6 +28,11 @@ import java.util.List;
 
 public class ManageDeviceFragment extends DialogFragment {
 
+    public interface ManageDeviceFragmentListener {
+
+        void onResult(int resultCode, Intent intent);
+    }
+
     public static String KEY_EDITION_MODE = "EDITION_MODE";
     public static String KEY_DEVICE_ID = "DEVICE_ID";
     public static String KEY_FLOOR_NUMBER = "FLOOR_NUMBER";
@@ -40,6 +45,8 @@ public class ManageDeviceFragment extends DialogFragment {
     private Spinner deviceTypes;
     private ImageButton deleteDeviceBtn;
 
+    private ManageDeviceFragmentListener listener;
+
     private String deviceId;
 
     public static ManageDeviceFragment newInstance() {
@@ -49,6 +56,10 @@ public class ManageDeviceFragment extends DialogFragment {
         ManageDeviceFragment fragment = new ManageDeviceFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setListener(ManageDeviceFragmentListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -155,12 +166,16 @@ public class ManageDeviceFragment extends DialogFragment {
     }
 
     private void sendResult(final int resultCode, final Intent intent) {
-        if(getTargetFragment() == null) {
-            return;
+        if (listener == null) {
+            if(getTargetFragment() == null) {
+                return;
+            }
+
+            getTargetFragment().onActivityResult(getTargetRequestCode() ,resultCode, intent);
+        } else {
+            listener.onResult(resultCode, intent);
         }
 
-
-        getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode, intent);
     }
 
 }
