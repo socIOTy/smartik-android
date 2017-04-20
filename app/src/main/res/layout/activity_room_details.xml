@@ -15,6 +15,12 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/room_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28dp"
+                android:layout_centerHorizontal="true"/>
             <ImageButton
                 android:id="@+id/room_delete_btn"
                 android:layout_width="wrap_content"

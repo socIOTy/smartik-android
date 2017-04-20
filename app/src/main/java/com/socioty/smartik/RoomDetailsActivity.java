@@ -11,9 +11,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -27,6 +29,7 @@ import com.socioty.smartik.utils.RequestUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -76,9 +79,15 @@ public class RoomDetailsActivity extends AppCompatActivity {
         this.room = Token.sToken.getDeviceMap().getRoom(getIntent().getExtras().getString("roomName"));
 
 
+        initializeTextName(room);
         initializeDeleteButton();
         initializeImage(room);
         initializeDeviceList(accessToken, userId, room);
+    }
+
+    private void initializeTextName(final Room room) {
+        final TextView textView = (TextView) findViewById(R.id.room_name);
+        textView.setText(room.getName());
     }
 
     private void initializeDeleteButton() {
